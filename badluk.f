@@ -13,7 +13,7 @@ C     USES flmoon,julday
             idwk=mod(jday+1,7)
             if(idwk.eq.5) then
                n=12.37*(iyyy-1900+(im-0.5)/12.)
-c     This value n is a rst approximation to how many full moons have
+c     This value n is a first approximation to how many full moons have
 c     occurred since 1900. We will feed it into the phase routine and
 c     adjust it up or down until we determine that our desired 13th was
 c     or was not a full moon. The variable icon signals the direction of
@@ -47,6 +47,6 @@ c     /output.
                goto 1
  2             continue
             endif
-         enddo 11
-      enddo 12
+ 11      continue
+ 12   continue
       END
