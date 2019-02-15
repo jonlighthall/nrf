@@ -2,8 +2,8 @@
       INTEGER julday,id,iyyy,mm,IGREG
       PARAMETER (IGREG=15+31*(10+12*1582)) ! Gregorian Calendar adopted Oct. 15, 1582.
 c     In this routine julday returns the Julian Day Number that begins
-c     at noon of the calendar date specied by month mm, day id, and
-c     year iyyy, all integer variables. Positive year signies A.D.;
+c     at noon of the calendar date specified by month mm, day id, and
+c     year iyyy, all integer variables. Positive year signifies A.D.;
 c     negative, B.C. Remember that the year after 1 B.C. was 1 A.D. 
       INTEGER ja,jm,jy
       jy=iyyy
