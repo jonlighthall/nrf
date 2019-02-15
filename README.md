@@ -2,11 +2,11 @@
 
 ## Computer Programs by Chapter and Section
 
-| sect | program  | description                          |
-| ---- | -------- | ------------------------------------ |
+| sect | program  | description                          | dependencies |
+| ---- | -------- | ------------------------------------ | -------------|
 |  1.0 | [`flmoon`](flmoon.f) | calculate phases of the moon by date |
 |  1.1 | [`julday`](julday.f) | Julian Day number from calendar date |
-|  1.1 | [`badluk`](badluk.f) | Friday the 13th when the moon is full |
+|  1.1 | [`badluk`](badluk.f) | Friday the 13th when the moon is full | `flmoon`, `julday`
 |  1.1 | [`caldat`](caldat.f) | calendar date from Julian day number |
 
 ## Installation
