@@ -3,7 +3,7 @@
      *     julday
       REAL TIMZON,frac
       PARAMETER (TIMZON=-5./24.) ! Time zone −5 is Eastern Standard Time.
-      DATA iybeg,iyend /1900,2000/ ! The range of dates to be searched.
+      DATA iybeg,iyend /1900,2100/ ! The range of dates to be searched.
 C     USES flmoon,julday
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
      *     iybeg,' to',iyend
