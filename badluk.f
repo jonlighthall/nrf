@@ -4,12 +4,14 @@
       REAL TIMZON,frac
       character(len = 7) :: zn ! Time zone name 
       DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
+      integer :: bads(10,2)
+      integer :: times(10,-12:14)
 C     USES flmoon,julday
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
      *     iybeg,' to',iyend
       badmin = 0
       badmax = 0
-      do 10 timezone = -8, 0  ! The range of time zones to be searched.
+      do 10 timezone = -12, 14  ! The range of time zones to be searched.
 c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
@@ -58,6 +60,9 @@ c     adjustment.
                   write (*,'(1x,a,i2,a,a,a)') 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn,').'
                   badcount = badcount + 1
+                  bads(badcount,1)=iyyy
+                  bads(badcount,2)=im
+                  times(badcount,timezone)=ifrac
 c     Don't worry if you are unfamiliar with FORTRAN's esoteric input
 c     /output statements; very few programs in this book do any input
 c     /output. 
@@ -83,6 +88,10 @@ c     /output.
  10   continue
       write (*,'(a,i2,a)') 'the   luckiest zone had ',badmin,' bad days'
       write (*,'(a,i2,a)') 'the unluckiest zone had ',badmax,' bad days'
-      do 13 i=-14,12
- 13   continue
+c     print *,bads
+c     print *,times
+      do, i=1,badmax
+         write (*,'(1x,i2,a,i2,a,i4)') bads(i,2),'/',13,'/',bads(i,1)
+c     write (*,*) bads(i,2),'/',13,'/',bads(i,1)
+      enddo
       END   
