@@ -21,7 +21,8 @@ c     adjustment.
                icon=0
  1             call flmoon(n,2,jd,frac) ! Get date of full moon n.
                ifrac=nint(24.*(frac+TIMZON)) ! Convert to hours in correct time zone.
-               if(ifrac.lt.0)then ! Convert from Julian Days beginning at noon to civil jd=jd-1 days beginning at midnight.
+               if(ifrac.lt.0)then ! Convert from Julian Days beginning at noon 
+                  jd=jd-1       ! to civil days beginning at midnight.
                   ifrac=ifrac+24
                endif
                if(ifrac.gt.12)then
