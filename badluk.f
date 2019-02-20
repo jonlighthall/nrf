@@ -1,14 +1,33 @@
       PROGRAM badluk
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
-     *     julday
+     *     julday,timezone
       REAL TIMZON,frac
-      PARAMETER (TIMZON=-5./24.) ! Time zone −5 is Eastern Standard Time.
-      DATA iybeg,iyend /1900,2100/ ! The range of dates to be searched.
+      character(len = 7) :: zn ! Time zone name 
+      DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
 C     USES flmoon,julday
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
      *     iybeg,' to',iyend
+      do 10 timezone = -8, 0! The range of time zones to be searched.
+c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
+c     in the Easter Time Zone (the program default). This loop is added
+c     to include other time zones.
+         select case (timezone) ! Named time zones
+         case (-8)
+            zn = 'PST'
+         case (-7)
+            zn = 'MST'
+         case (-6)
+            zn = 'CST'
+         case (-5)              ! Time zone −5 is Eastern Standard Time.
+            zn = 'EST'
+         case (0)
+            zn = 'GMT'
+         case default
+            write (zn, '(i3,a)') timezone, ' UTC'
+         end select
+         TIMZON=timezone/24.    
       do 12 iyyy=iybeg,iyend ! Loop over each year,
-         do 11 im=1,12 ! and each month.
+         do 11 im=1,12       ! and each month.
             jday=julday(im,13,iyyy) ! Is the 13th a Friday?
             idwk=mod(jday+1,7)
             if(idwk.eq.5) then
@@ -33,8 +52,8 @@ c     adjustment.
                endif
                if(jd.eq.jday)then ! Did we hit our target day?
                   write (*,'(/1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
-                  write (*,'(1x,a,i2,a)') 'Full moon ',ifrac,
-     *                 ' hrs after midnight (EST).'
+                  write (*,'(1x,a,i2,a,a,a)') 'Full moon ',ifrac,
+     *                 ' hrs after midnight (',zn,').'
 c     Don't worry if you are unfamiliar with FORTRAN's esoteric input
 c     /output statements; very few programs in this book do any input
 c     /output. 
@@ -50,4 +69,5 @@ c     /output.
             endif
  11      continue
  12   continue
-      END
+ 10   continue
+      END   
