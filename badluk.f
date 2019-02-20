@@ -1,16 +1,19 @@
       PROGRAM badluk
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
-     *     julday,timezone
+     *     julday,timezone, badcount, badmin, badmax
       REAL TIMZON,frac
       character(len = 7) :: zn ! Time zone name 
       DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
 C     USES flmoon,julday
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
      *     iybeg,' to',iyend
-      do 10 timezone = -8, 0! The range of time zones to be searched.
+      badmin = 0
+      badmax = 0
+      do 10 timezone = -8, 0  ! The range of time zones to be searched.
 c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
+      badcount = 0
          select case (timezone) ! Named time zones
          case (-8)
             zn = 'PST'
@@ -54,6 +57,7 @@ c     adjustment.
                   write (*,'(/1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
                   write (*,'(1x,a,i2,a,a,a)') 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn,').'
+                  badcount = badcount + 1
 c     Don't worry if you are unfamiliar with FORTRAN's esoteric input
 c     /output statements; very few programs in this book do any input
 c     /output. 
@@ -69,5 +73,16 @@ c     /output.
             endif
  11      continue
  12   continue
+         write (*,'(a,i2,a)') 'found ',badcount,' bad days in zone'
+         if(badcount.gt.badmax)then
+            badmax=badcount
+         endif
+         if(badcount.lt.badmax)then
+            badmin=badcount
+         endif
  10   continue
+      write (*,'(a,i2,a)') 'the   luckiest zone had ',badmin,' bad days'
+      write (*,'(a,i2,a)') 'the unluckiest zone had ',badmax,' bad days'
+      do 13 i=-14,12
+ 13   continue
       END   
