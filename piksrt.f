@@ -11,9 +11,9 @@ c     sorted rearrangement.
          do 11 i=j-1,1,-1       ! Look for the place to insert it.
             if(arr(i).le.a)goto 10
             arr(i+1)=arr(i)
-         enddo 11
+ 11      enddo 
          i=0
  10      arr(i+1)=a             ! Insert it.
-      enddo 12
+ 12   enddo 
       return
       END

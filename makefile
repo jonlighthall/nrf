@@ -19,6 +19,9 @@ badluk.exe: badluk.o flmoon.o julday.o
 caldat.exe: caldat.dem.o julday.o caldat.o
 	$(your_f77) $(fcflags) $^ -o $@
 
+piksrt.exe: piksrt.dem.o piksrt.o
+	$(your_f77) $(fcflags) $^ -o $@
+
 %.o: %.f	
 	 $(your_f77) $(flflags) $<
 
