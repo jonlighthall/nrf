@@ -1,6 +1,7 @@
       PROGRAM badluk
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
-     *     julday,timezone, badcount, badmin, badmax
+     *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
+      LOGICAL newbad
       REAL TIMZON,frac
       character(len = 7) :: zn ! Time zone name 
       DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
@@ -11,6 +12,8 @@ C     USES flmoon,julday
      *     iybeg,' to',iyend
       badmin = 0
       badmax = 0
+      badtotal = 0
+      whichbad = 0
       do 10 timezone = -12, 14  ! The range of time zones to be searched.
 c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
@@ -56,13 +59,37 @@ c     adjustment.
                   ifrac=ifrac+12
                endif
                if(jd.eq.jday)then ! Did we hit our target day?
-                  write (*,'(/1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
+                  if(badtotal.eq.0)then ! first?
+                     write(*,*)'found first bad day!'
+                     badtotal = 1
+                     whichbad = badtotal
+c                     bads(whichbad,1)=iyyy
+c                     bads(whichbad,2)=im
+c                     times(whichbad,timezone)=ifrac
+                  else          ! not first
+                     write(*,*)'found a bad day. checking...'
+                     newbad = .true.
+                     do i=1,badtotal ! check
+                        if(iyyy.eq.bads(i,1)) then
+                           whichbad = i
+                           write(*,*)'found match at',i,iyyy
+                           newbad = .false.
+                        endif
+                     enddo
+                     if(newbad)then ! new?
+                        badtotal = badtotal +1
+                        whichbad = badtotal
+                       write(*,*) 'found new bad day! count = ',badtotal
+                     endif      ! end new?
+                  endif         ! end first?                 
+                  bads(whichbad,1)=iyyy
+                  bads(whichbad,2)=im
+                  times(whichbad,timezone)=ifrac
+                  write (*,'(1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
                   write (*,'(1x,a,i2,a,a,a)') 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn,').'
                   badcount = badcount + 1
-                  bads(badcount,1)=iyyy
-                  bads(badcount,2)=im
-                  times(badcount,timezone)=ifrac
+                 
 c     Don't worry if you are unfamiliar with FORTRAN's esoteric input
 c     /output statements; very few programs in this book do any input
 c     /output. 
@@ -86,12 +113,14 @@ c     /output.
             badmin=badcount
          endif
  10   continue
+      write (*,*) 'found',badtotal,'bad days from',iybeg,' to',iyend
       write (*,'(a,i2,a)') 'the   luckiest zone had ',badmin,' bad days'
       write (*,'(a,i2,a)') 'the unluckiest zone had ',badmax,' bad days'
 c     print *,bads
 c     print *,times
-      do, i=1,badmax
-         write (*,'(1x,i2,a,i2,a,i4)') bads(i,2),'/',13,'/',bads(i,1)
+      do, i=1,badtotal
+         write (*,'(1x,i2,a,i2,a,i4,27(1x,a))') bads(i,2),'/',13,'/'
+     $        ,bads(i,1) 
 c     write (*,*) bads(i,2),'/',13,'/',bads(i,1)
       enddo
       END   
