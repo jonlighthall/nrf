@@ -2,10 +2,9 @@
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
       LOGICAL newbad
-      INTEGER, PARAMETER ::zs=-12 ,ze=14 ! The range of time zones to be searched.
-c      INTEGER, PARAMETER ::dtz=ze-zs
+      INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac
-      character(len = 7) :: zn ! Time zone name 
+      character(len = 7) :: zn(zs:ze) ! Time zone name 
       DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
       integer :: bads(10,2)
       integer :: times(10,zs:ze)
@@ -23,21 +22,13 @@ c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
       badcount = 0
-         select case (timezone) ! Named time zones
-         case (-8)
-            zn = 'PST'
-         case (-7)
-            zn = 'MST'
-         case (-6)
-            zn = 'CST'
-         case (-5)              ! Time zone −5 is Eastern Standard Time.
-            zn = 'EST'
-         case (0)
-            zn = 'GMT'
-         case default
-            write (zn, '(i3,a)') timezone, ' UTC'
-         end select
-         TIMZON=timezone/24.    
+      write (zn(timezone), '(i3,a)') timezone, ' UTC'
+      zn(-8) = 'PST'
+      zn(-7) = 'MST'
+      zn(-6) = 'CST'
+      zn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
+      zn( 0) = 'GMT'
+      TIMZON=timezone/24.    
       do 12 iyyy=iybeg,iyend ! Loop over each year,
          do 11 im=1,12       ! and each month.
             jday=julday(im,13,iyyy) ! Is the 13th a Friday?
@@ -91,7 +82,7 @@ c                       write(*,*) 'found new bad day! count = ',badtotal
                   times(whichbad,timezone)=ifrac
                   write (*,'(1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
                   write (*,'(1x,a,i2,a,a,a)') 'Full moon ',ifrac,
-     *                 ' hrs after midnight (',zn,').'
+     *                 ' hrs after midnight (',zn(timezone),').'
                   badcount = badcount + 1
                  
 c     Don't worry if you are unfamiliar with FORTRAN's esoteric input
@@ -120,9 +111,10 @@ c     /output.
       write (*,*) 'found',badtotal,'bad days from',iybeg,' to',iyend
       write (*,'(a,i2,a)') 'the   luckiest zone had ',badmin,' bad days'
       write (*,'(a,i2,a)') 'the unluckiest zone had ',badmax,' bad days'
-      write (*,'(11x,*(1x,i3))') ( j, j=zs,ze )
+      write (*,'(11x,*(1x,a3))') (zn(j),j=zs,ze)
+      write (*,'(11x,*(1x,i3))') (j,j=zs,ze)
       do, i=1,badtotal
          write (*,'(1x,i2,a,i2,a,i4,*(1x,i3))') bads(i,2),'/',13,'/'
-     $        ,bads(i,1), ( times(i,j), j=zs,ze )
+     $        ,bads(i,1), (times(i,j),j=zs,ze)
       enddo
       END   
