@@ -2,11 +2,13 @@
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
       LOGICAL newbad
+      INTEGER, PARAMETER ::zs=-12 ,ze=14 ! The range of time zones to be searched.
+c      INTEGER, PARAMETER ::dtz=ze-zs
       REAL TIMZON,frac
       character(len = 7) :: zn ! Time zone name 
       DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
       integer :: bads(10,2)
-      integer :: times(10,-12:14)
+      integer :: times(10,zs:ze)
 C     USES flmoon,julday
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
      *     iybeg,' to',iyend
@@ -16,7 +18,7 @@ C     USES flmoon,julday
       badmax = 0
       badtotal = 0
       whichbad = 0
-      do 10 timezone = -12, 14  ! The range of time zones to be searched.
+      do 10 timezone = zs, ze  
 c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
@@ -62,26 +64,26 @@ c     adjustment.
                endif
                if(jd.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?
-                     write(*,*)'found first bad day!'
+c                     write(*,*)'found first bad day!'
                      badtotal = 1
                      whichbad = badtotal
 c                     bads(whichbad,1)=iyyy
 c                     bads(whichbad,2)=im
 c                     times(whichbad,timezone)=ifrac
                   else          ! not first
-                     write(*,*)'found a bad day. checking...'
+c                     write(*,*)'found a bad day. checking...'
                      newbad = .true.
                      do i=1,badtotal ! check
                         if(iyyy.eq.bads(i,1)) then
                            whichbad = i
-                           write(*,*)'found match at',i,iyyy
+c                           write(*,*)'found match at',i,iyyy
                            newbad = .false.
                         endif
                      enddo
                      if(newbad)then ! new?
                         badtotal = badtotal +1
                         whichbad = badtotal
-                       write(*,*) 'found new bad day! count = ',badtotal
+c                       write(*,*) 'found new bad day! count = ',badtotal
                      endif      ! end new?
                   endif         ! end first?                 
                   bads(whichbad,1)=iyyy
@@ -118,11 +120,9 @@ c     /output.
       write (*,*) 'found',badtotal,'bad days from',iybeg,' to',iyend
       write (*,'(a,i2,a)') 'the   luckiest zone had ',badmin,' bad days'
       write (*,'(a,i2,a)') 'the unluckiest zone had ',badmax,' bad days'
-c     print *,bads
-c     print *,times
+      write (*,'(11x,*(1x,i3))') ( j, j=zs,ze )
       do, i=1,badtotal
-         write (*,'(1x,i2,a,i2,a,i4,27(1x,i2))') bads(i,2),'/',13,'/'
-     $        ,bads(i,1), ( times(i,j), j=-12,14 )
-c     write (*,*) bads(i,2),'/',13,'/',bads(i,1)
+         write (*,'(1x,i2,a,i2,a,i4,*(1x,i3))') bads(i,2),'/',13,'/'
+     $        ,bads(i,1), ( times(i,j), j=zs,ze )
       enddo
       END   
