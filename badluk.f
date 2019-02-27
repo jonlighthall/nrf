@@ -10,6 +10,8 @@
 C     USES flmoon,julday
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
      *     iybeg,' to',iyend
+      bads = 0
+      times = 0
       badmin = 0
       badmax = 0
       badtotal = 0
@@ -119,8 +121,8 @@ c     /output.
 c     print *,bads
 c     print *,times
       do, i=1,badtotal
-         write (*,'(1x,i2,a,i2,a,i4,27(1x,a))') bads(i,2),'/',13,'/'
-     $        ,bads(i,1) 
+         write (*,'(1x,i2,a,i2,a,i4,27(1x,i2))') bads(i,2),'/',13,'/'
+     $        ,bads(i,1), ( times(i,j), j=-12,14 )
 c     write (*,*) bads(i,2),'/',13,'/',bads(i,1)
       enddo
       END   
