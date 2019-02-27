@@ -1,7 +1,7 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR2
 	DIMENSION A(100),B(100)
-	OPEN(5,FILE='TARRAY.DAT',STATUS='OLD')
+	OPEN(5,FILE='tarray.dat',STATUS='OLD')
 	READ(5,*) (A(I),I=1,100)
 	CLOSE(5)
 C	Generate B-array
