@@ -17,7 +17,7 @@
 |  --- | [`julday`](julday.dem.f) | Julian Day number from calendar date  | `julday`                     | `dates.dat` |
 |  1.1 | [`badluk`](badluk.f)     | Friday the 13th when the moon is full | `flmoon`, `julday`           |             |
 |  --- | [`caldat`](caldat.dem.f) | calendar date from Julian day number  | `julday`, `caldat`           | `dates.dat` |
-|  --- | [`piksrt`](piksrt.dem.f) | sort an array by straight insertion   | `piksrt`
+|  --- | [`piksrt`](piksrt.dem.f) | sort an array by straight insertion   | `piksrt`                     | `tarray.dat'|
 
 ## Installation
 ### Cloning

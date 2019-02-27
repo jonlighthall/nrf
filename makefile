@@ -5,7 +5,7 @@ fcflags = -std=legacy
 # link flags
 flflags = -c $(fcflags)
 
-all: flmoon.exe julday.exe badluk.exe caldat.exe
+all: flmoon.exe julday.exe badluk.exe caldat.exe piksrt.exe
 
 flmoon.exe: flmoon.dem.o flmoon.o julday.o caldat.o
 	$(your_f77) $(fcflags) $^ -o $@
