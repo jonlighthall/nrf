@@ -1,7 +1,7 @@
 	PROGRAM D8R1
 C	Driver for routine PIKSRT
 	DIMENSION A(100)
-	OPEN(5,FILE='TARRAY.DAT',STATUS='OLD')
+	OPEN(5,FILE='tarray.dat',STATUS='OLD')
 	READ(5,*) (A(I),I=1,100)
 	CLOSE(5)
 C	Print original array
