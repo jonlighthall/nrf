@@ -1,7 +1,8 @@
 # compiler
-your_f77 = gfortran
+your_f77 = pgfortran
+export PGI_OBJSUFFIX=o
 # compile flags
-fcflags = -std=legacy
+fcflags = -Mnodwarf
 # link flags
 flflags = -c $(fcflags)
 
@@ -25,4 +26,6 @@ caldat.exe: caldat.dem.o julday.o caldat.o
 clean:
 	rm -fv $(objs)
 	rm -fv *.exe
+	rm -fv *.dwf
+	rm -fv *.pdb
 
