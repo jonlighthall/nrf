@@ -2,7 +2,7 @@
 your_f77 = pgfortran
 export PGI_OBJSUFFIX=o
 # compile flags
-fcflags = -Mnodwarf
+fcflags =
 # link flags
 flflags = -c $(fcflags)
 
