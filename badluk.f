@@ -75,7 +75,14 @@ c                           write(*,*)'found match at',i,iyyy
                      if(newbad)then ! new?
                         badtotal = badtotal +1
                         whichbad = badtotal
-c                       write(*,*) 'found new bad day! count = ',badtotal
+                        if(badtotal.lt.ba)then
+c                       write(*,*) 'found new bad day! count = '
+c     &                          ,badtotal
+                        else
+                           write(*,*) 'too many bad days. 
+     &increase array size!'
+                           return
+                        endif
                      endif      ! end new?
                   endif         ! end first?                 
                   bads(whichbad,1)=iyyy
