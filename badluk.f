@@ -6,8 +6,9 @@
       REAL TIMZON,frac
       character(len = 7) :: zn(zs:ze) ! Time zone name 
       DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
-      integer :: bads(10,2)
-      integer :: times(10,zs:ze)
+      integer, parameter :: ba = 25
+      integer :: bads(ba,2)
+      integer :: times(ba,zs:ze)
 C     USES flmoon,julday
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
      *     iybeg,' to',iyend
