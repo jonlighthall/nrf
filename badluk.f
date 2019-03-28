@@ -26,7 +26,7 @@ c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
       badcount = 0
-      write (zn(timezone), '(i3,a)') timezone, ' UTC'
+      write (zn(timezone), '(sp,i3,a)') timezone, ' UTC'
       zn(-8) = 'PST'
       zn(-7) = 'MST'
       zn(-6) = 'CST'
@@ -92,7 +92,9 @@ c     &                          ,badtotal
                   bads(whichbad,2)=im
                   times(whichbad,timezone)=ifrac
                   write (*,'(1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
-                  write (*,'(1x,a,i2,a,a,a)') 'Full moon ',ifrac,
+                  write (fmt,'(a,i1,a)')'(1x,a,i2,a,a'
+     &                 ,len_trim(zn(timezone)),',a)'
+                  write (*,fmt) 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn(timezone),').'
                   badcount = badcount + 1
                  
