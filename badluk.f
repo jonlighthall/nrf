@@ -13,13 +13,13 @@
       integer :: bads(ba,2)
       integer :: times(ba,zs:ze)
 C     USES flmoon,julday
-      rollback = 0              ! rollback to original output
-      check = 0                 ! print check statements (debug)
-      list = 0                  ! print list of dates
+      rollback = .false.        ! rollback to original output
+      check = .false.           ! print check statements (debug)
+      list = .false.            ! print list of dates
       if(rollback) then
          iybeg=1900
          iyend=2000
-         check = 0
+         check = .false.
       endif
 
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
