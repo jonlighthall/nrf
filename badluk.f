@@ -2,7 +2,7 @@
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
      &     , ntz
-      LOGICAL newbad, rollback, check
+      LOGICAL newbad, rollback, check, list
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac
       character(len = 7) :: zn(zs:ze) ! Time zone name 
@@ -14,10 +14,12 @@
       integer :: times(ba,zs:ze)
 C     USES flmoon,julday
       rollback = 0              ! rollback to original output
-      check = 0                 ! print check statements
+      check = 0                 ! print check statements (debug)
+      list = 0                  ! print list of dates
       if(rollback) then
          iybeg=1900
          iyend=2000
+         check = 0
       endif
 
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
@@ -85,7 +87,9 @@ c     adjustment.
                      do i=1,badtotal ! check
                       if((iyyy.eq.bads(i,1)).and.(im.eq.bads(i,2))) then
                            whichbad = i
-                           if(check)write(*,*)'found match at',i,iyyy
+                           if(check)write(*,'(1x,i2,a,i2,a,i4,a)'
+     &                          )im,'/',13,'/',iyyy,' already found'
+
                            newbad = .false.
                         endif
                      enddo
@@ -93,7 +97,7 @@ c     adjustment.
                         badtotal = badtotal +1
                         whichbad = badtotal
                         if(badtotal.lt.ba)then
-                           if(check) write(*,*)
+                           if(check) write(*,'(a,i2)')
      &                          'found new bad day! count = ',badtotal
                         else
                            write(*,*) 'too many bad days. 
@@ -105,7 +109,8 @@ c     adjustment.
                   bads(whichbad,1)=iyyy
                   bads(whichbad,2)=im
                   times(whichbad,timezone)=ifrac
-               if((.not.rollback.or.(timezone.eq.-5)).and.newbad) then
+                  if( (rollback.and.(timezone.eq.-5).or.
+     &                 (.not.rollback).and.list.and.newbad) ) then
                   write (*,'(/1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
                   if(len_trim(zn(timezone)).gt.0)then
                      write (fmt,'(a,i1,a)')'(1x,a,i2,a,a'
@@ -143,9 +148,12 @@ c     /output.
          endif
  10   continue
       if(.not.rollback) then
-      write (*,*) 'found',badtotal,'bad days from',iybeg,' to',iyend
-      write (*,'(a,i2,a)') 'the   luckiest zone had ',badmin,' bad days'
-      write (*,'(a,i2,a)') 'the unluckiest zone had ',badmax,' bad days'
+         write (*,'(/19x,a,i2,a,i5,a,i5)') 'Found ',badtotal
+     &        ,' bad days from',iybeg,' to',iyend
+         write (*,'(1x,a,i2,a)') '  The luckiest zone had ',badmin
+     &        ,' bad days'
+         write (*,'(1x,a,i2,a/)') 'The unluckiest zone had ',badmax
+     &        ,' bad days'
       write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,a3))'
       write (*,fmt) (dzn(j),j=zs,ze)
       write (*,fmt) (szn(j),j=zs,ze)
