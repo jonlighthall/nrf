@@ -6,6 +6,7 @@
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac
       character(len = 7) :: zn(zs:ze) ! Time zone name 
+      character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name 
       character(len = 256) :: fmt
       DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
       integer, parameter :: ba = 25
@@ -26,12 +27,21 @@ c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
       badcount = 0
-      write (zn(timezone), '(sp,i3,a)') timezone, ' UTC'
-      zn(-8) = 'PST'
-      zn(-7) = 'MST'
-      zn(-6) = 'CST'
-      zn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
+      write (zn(timezone), '(sp,i3,a)') timezone, ' UTC' 
+      szn=''
+      szn(-8) = 'PST'
+      szn(-7) = 'MST'
+      szn(-6) = 'CST'
+      szn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
+      szn(-4) = 'AST'
       zn( 0) = 'GMT'
+c      szn(+1) = 'CET'
+      dzn=''
+      dzn(-7) = 'PDT'
+      dzn(-6) = 'MDT'
+      dzn(-5) = 'CDT'
+      dzn(-4) = 'EDT'
+      dzn(-3) = 'ADT'
       TIMZON=timezone/24.    
       do 12 iyyy=iybeg,iyend ! Loop over each year,
          do 11 im=1,12       ! and each month.
@@ -92,8 +102,12 @@ c     &                          ,badtotal
                   bads(whichbad,2)=im
                   times(whichbad,timezone)=ifrac
                   write (*,'(1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
-                  write (fmt,'(a,i1,a)')'(1x,a,i2,a,a'
-     &                 ,len_trim(zn(timezone)),',a)'
+                  if(len_trim(zn(timezone)).gt.0)then
+                     write (fmt,'(a,i1,a)')'(1x,a,i2,a,a'
+     &                    ,len_trim(zn(timezone)),',a)'
+                  else
+                     write (fmt,*)'(1x,a,i2,a,a,a)'
+                  endif
                   write (*,fmt) 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn(timezone),').'
                   badcount = badcount + 1
@@ -125,10 +139,15 @@ c     /output.
       write (*,'(a,i2,a)') 'the   luckiest zone had ',badmin,' bad days'
       write (*,'(a,i2,a)') 'the unluckiest zone had ',badmax,' bad days'
       write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,a3))'
+      write (*,fmt) (dzn(j),j=zs,ze)
+      write (*,fmt) (szn(j),j=zs,ze)
       write (*,fmt) (zn(j),j=zs,ze)
-      write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,i3))'
+      write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,sp,i3))'
       write (*,fmt) (j,j=zs,ze)
       write (fmt,'(a,i2,a)')'(1x,i2,a,i2,a,i4,',ntz,'(1x,i3))'
+      write(*,*)'-----------------------------------------------------',
+     &'---------------------------------------------------',
+     &'--------------'
       do, i=1,badtotal
          write (*,fmt) bads(i,2),'/',13,'/'
      $        ,bads(i,1), (times(i,j),j=zs,ze)
