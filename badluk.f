@@ -1,10 +1,12 @@
       PROGRAM badluk
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
+     &     , ntz
       LOGICAL newbad
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac
       character(len = 7) :: zn(zs:ze) ! Time zone name 
+      character(len = 256) :: fmt
       DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
       integer, parameter :: ba = 25
       integer :: bads(ba,2)
@@ -18,6 +20,7 @@ C     USES flmoon,julday
       badmax = 0
       badtotal = 0
       whichbad = 0
+      ntz=ze-zs+1
       do 10 timezone = zs, ze  
 c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
@@ -119,10 +122,13 @@ c     /output.
       write (*,*) 'found',badtotal,'bad days from',iybeg,' to',iyend
       write (*,'(a,i2,a)') 'the   luckiest zone had ',badmin,' bad days'
       write (*,'(a,i2,a)') 'the unluckiest zone had ',badmax,' bad days'
-      write (*,'(11x,*(1x,a3))') (zn(j),j=zs,ze)
-      write (*,'(11x,*(1x,i3))') (j,j=zs,ze)
+      write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,a3))'
+      write (*,fmt) (zn(j),j=zs,ze)
+      write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,i3))'
+      write (*,fmt) (j,j=zs,ze)
+      write (fmt,'(a,i2,a)')'(1x,i2,a,i2,a,i4,',ntz,'(1x,i3))'
       do, i=1,badtotal
-         write (*,'(1x,i2,a,i2,a,i4,*(1x,i3))') bads(i,2),'/',13,'/'
+         write (*,fmt) bads(i,2),'/',13,'/'
      $        ,bads(i,1), (times(i,j),j=zs,ze)
       enddo
       END   
