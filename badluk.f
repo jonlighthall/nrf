@@ -2,17 +2,23 @@
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
      &     , ntz
-      LOGICAL newbad
+      LOGICAL newbad, rollback
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac
       character(len = 7) :: zn(zs:ze) ! Time zone name 
       character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name 
       character(len = 256) :: fmt
-      DATA iybeg,iyend /2000,2050/ ! The range of dates to be searched.
+      DATA iybeg,iyend /1900,2050/ ! The range of dates to be searched.
       integer, parameter :: ba = 25
       integer :: bads(ba,2)
       integer :: times(ba,zs:ze)
 C     USES flmoon,julday
+      rollback = 0              ! rollback to original output
+      if(rollback) then
+         iybeg=1900
+         iyend=2000
+      endif
+
       write (*,'(1x,a,i5,a,i5)') 'Full moons on Friday the 13th from',
      *     iybeg,' to',iyend
       bads = 0
@@ -32,7 +38,7 @@ c     to include other time zones.
       szn(-8) = 'PST'
       szn(-7) = 'MST'
       szn(-6) = 'CST'
-      szn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
+      zn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
       szn(-4) = 'AST'
       zn( 0) = 'GMT'
 c      szn(+1) = 'CET'
@@ -101,7 +107,8 @@ c     &                          ,badtotal
                   bads(whichbad,1)=iyyy
                   bads(whichbad,2)=im
                   times(whichbad,timezone)=ifrac
-                  write (*,'(1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
+               if(.not.rollback.or.(timezone.eq.-5)) then
+                  write (*,'(/1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
                   if(len_trim(zn(timezone)).gt.0)then
                      write (fmt,'(a,i1,a)')'(1x,a,i2,a,a'
      &                    ,len_trim(zn(timezone)),',a)'
@@ -110,6 +117,7 @@ c     &                          ,badtotal
                   endif
                   write (*,fmt) 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn(timezone),').'
+               endif
                   badcount = badcount + 1
                  
 c     Don't worry if you are unfamiliar with FORTRAN's esoteric input
@@ -127,7 +135,7 @@ c     /output.
             endif
  11      continue
  12   continue
-         write (*,'(a,i2,a)') 'found ',badcount,' bad days in zone'
+c     write (*,'(a,i2,a)') 'found ',badcount,' bad days in zone'
          if(badcount.gt.badmax)then
             badmax=badcount
          endif
@@ -135,6 +143,7 @@ c     /output.
             badmin=badcount
          endif
  10   continue
+      if(.not.rollback) then
       write (*,*) 'found',badtotal,'bad days from',iybeg,' to',iyend
       write (*,'(a,i2,a)') 'the   luckiest zone had ',badmin,' bad days'
       write (*,'(a,i2,a)') 'the unluckiest zone had ',badmax,' bad days'
@@ -152,4 +161,5 @@ c     /output.
          write (*,fmt) bads(i,2),'/',13,'/'
      $        ,bads(i,1), (times(i,j),j=zs,ze)
       enddo
+      endif
       END   
