@@ -2,7 +2,7 @@
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
      &     , ntz
-      LOGICAL newbad, rollback
+      LOGICAL newbad, rollback, check
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac
       character(len = 7) :: zn(zs:ze) ! Time zone name 
@@ -14,6 +14,7 @@
       integer :: times(ba,zs:ze)
 C     USES flmoon,julday
       rollback = 0              ! rollback to original output
+      check = 0                 ! print check statements
       if(rollback) then
          iybeg=1900
          iyend=2000
@@ -75,19 +76,16 @@ c     adjustment.
                endif
                if(jd.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?
-c                     write(*,*)'found first bad day!'
+                     if(check)write(*,*)'found first bad day!'
                      badtotal = 1
                      whichbad = badtotal
-c                     bads(whichbad,1)=iyyy
-c                     bads(whichbad,2)=im
-c                     times(whichbad,timezone)=ifrac
                   else          ! not first
-c                     write(*,*)'found a bad day. checking...'
+                     if(check)write(*,*)'found a bad day. checking...'
                      newbad = .true.
                      do i=1,badtotal ! check
                       if((iyyy.eq.bads(i,1)).and.(im.eq.bads(i,2))) then
                            whichbad = i
-c                           write(*,*)'found match at',i,iyyy
+                           if(check)write(*,*)'found match at',i,iyyy
                            newbad = .false.
                         endif
                      enddo
@@ -95,8 +93,8 @@ c                           write(*,*)'found match at',i,iyyy
                         badtotal = badtotal +1
                         whichbad = badtotal
                         if(badtotal.lt.ba)then
-c                       write(*,*) 'found new bad day! count = '
-c     &                          ,badtotal
+                           if(check) write(*,*)
+     &                          'found new bad day! count = ',badtotal
                         else
                            write(*,*) 'too many bad days. 
      &increase array size!'
@@ -107,7 +105,7 @@ c     &                          ,badtotal
                   bads(whichbad,1)=iyyy
                   bads(whichbad,2)=im
                   times(whichbad,timezone)=ifrac
-               if(.not.rollback.or.(timezone.eq.-5)) then
+               if((.not.rollback.or.(timezone.eq.-5)).and.newbad) then
                   write (*,'(/1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
                   if(len_trim(zn(timezone)).gt.0)then
                      write (fmt,'(a,i1,a)')'(1x,a,i2,a,a'
@@ -135,7 +133,8 @@ c     /output.
             endif
  11      continue
  12   continue
-c     write (*,'(a,i2,a)') 'found ',badcount,' bad days in zone'
+      if(check) write (*,'(a,i2,a)') 'found ',badcount
+     &     ,' bad days in zone'
          if(badcount.gt.badmax)then
             badmax=badcount
          endif
