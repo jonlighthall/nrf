@@ -65,7 +65,7 @@ c                     times(whichbad,timezone)=ifrac
 c                     write(*,*)'found a bad day. checking...'
                      newbad = .true.
                      do i=1,badtotal ! check
-                        if(iyyy.eq.bads(i,1)) then
+                      if((iyyy.eq.bads(i,1)).and.(im.eq.bads(i,2))) then
                            whichbad = i
 c                           write(*,*)'found match at',i,iyyy
                            newbad = .false.
