@@ -31,4 +31,4 @@ piksr2.exe: piksr2.dem.o piksr2.o
 clean:
 	rm -fv *.o
 	rm -fv *.exe
-
+	rm -fv fort.*
