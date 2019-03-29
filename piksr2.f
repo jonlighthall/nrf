@@ -1,16 +1,21 @@
-      SUBROUTINE PIKSR2(N,ARR,BRR)
-      DIMENSION ARR(N),BRR(N)
-      DO 12 J=2,N
-        A=ARR(J)
-        B=BRR(J)
-        DO 11 I=J-1,1,-1
-          IF(ARR(I).LE.A)GO TO 10
-          ARR(I+1)=ARR(I)
-          BRR(I+1)=BRR(I)
-11      CONTINUE
-        I=0
-10      ARR(I+1)=A
-        BRR(I+1)=B
-12    CONTINUE
-      RETURN
-      END
+SUBROUTINE piksr2(n,arr,brr)
+INTEGER n
+REAL arr(n),brr(n)
+Sorts an array arr(1:n) into ascending numerical order, by straight insertion, while making
+the corresponding rearrangement of the array brr(1:n).
+INTEGER i,j
+REAL a,b
+do 12 j=2,n Pick out each element in turn.
+a=arr(j)
+b=brr(j)
+do 11 i=j-1,1,-1 Look for the place to insert it.
+if(arr(i).le.a)goto 10
+arr(i+1)=arr(i)
+brr(i+1)=brr(i)
+enddo 11
+i=0
+10 arr(i+1)=a Insert it.
+brr(i+1)=b
+enddo 12
+return
+END
