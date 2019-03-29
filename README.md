@@ -2,12 +2,13 @@
 
 ## Subroutines by Chapter and Section
 
-| sect | program              | description                          | dependencies |
-| ---- | -------------------- | ------------------------------------ | -------------|
-|  1.0 | [`flmoon`](flmoon.f) | calculate phases of the moon by date |
-|  1.1 | [`julday`](julday.f) | Julian Day number from calendar date |
-|  1.1 | [`caldat`](caldat.f) | calendar date from Julian day number |
-|  8.1 | [`piksrt`](piksrt.f) | sort an array by straight insertion  | 
+| sect | program              | description                           | dependencies |
+| ---- | -------------------- | ------------------------------------  | -------------|
+|  1.0 | [`flmoon`](flmoon.f) | calculate phases of the moon by date  |
+|  1.1 | [`julday`](julday.f) | Julian Day number from calendar date  |
+|  1.1 | [`caldat`](caldat.f) | calendar date from Julian day number  |
+|  8.1 | [`piksrt`](piksrt.f) | sort an array by straight insertion   | 
+|  8.1 | [`piksr2`](piksr2.f) | sort two arrays by straight insertion |
 
 ## Demonstration Programs
 
@@ -18,6 +19,7 @@
 |  1.1 | [`badluk`](badluk.f)     | Friday the 13th when the moon is full | `flmoon`, `julday`           |             |
 |  --- | [`caldat`](caldat.dem.f) | calendar date from Julian day number  | `julday`, `caldat`           | `dates.dat` |
 |  --- | [`piksrt`](piksrt.dem.f) | sort an array by straight insertion   | `piksrt`                     | `tarray.dat'|
+|  --- | [`piksr2`](piksr2.dem.f) | sort an array by straight insertion   | `piksr2`                     | `tarray.dat'|
 
 ## Installation
 ### Cloning
