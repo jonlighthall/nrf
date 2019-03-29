@@ -1,9 +1,10 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR2
 	DIMENSION A(100),B(100)
-	OPEN(5,FILE='tarray.dat',STATUS='OLD')
-	READ(5,*) (A(I),I=1,100)
-	CLOSE(5)
+	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
+	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
+	READ(UNIT,*) (A(I),I=1,100)
+	CLOSE(UNIT)
 C	Generate B-array
 	DO 11 I=1,100
 		B(I)=I
