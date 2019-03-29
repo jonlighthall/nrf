@@ -1,9 +1,10 @@
 	PROGRAM D8R1
 C	Driver for routine PIKSRT
 	DIMENSION A(100)
-	OPEN(5,FILE='tarray.dat',STATUS='OLD')
-	READ(5,*) (A(I),I=1,100)
-	CLOSE(5)
+	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
+	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
+	READ(UNIT,*) (A(I),I=1,100)
+	CLOSE(UNIT)
 C	Print original array
 	WRITE(*,*) 'Original array:'
 	DO 11 I=1,10
