@@ -13,10 +13,10 @@ c     of the array brr(1:n).
             if(arr(i).le.a)goto 10
             arr(i+1)=arr(i)
             brr(i+1)=brr(i)
-         enddo 11
+ 11      enddo 
          i=0
  10      arr(i+1)=a             ! Insert it.
          brr(i+1)=b
-      enddo 12
+ 12   enddo 
       return
       END
