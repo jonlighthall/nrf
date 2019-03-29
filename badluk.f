@@ -4,7 +4,7 @@
      &     , ntz
       LOGICAL newbad, rollback, check, list
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
-      REAL TIMZON,frac,ffrac
+      REAL TIMZON,frac,ffrac,hour,min,sec
       character(len = 7) :: zn(zs:ze) ! Time zone name 
       character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name 
       character(len = 256) :: fmt
@@ -124,8 +124,14 @@ c     adjustment.
                   endif
                   write (*,fmt) 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn(timezone),').'
+                  hour=int(ffrac)
+                  min=int((ffrac-hour)*60)
+                  sec=((ffrac-hour)*60-min)*60
                   write (*,*) 'Full moon ',ffrac,
      *                 ' hrs after midnight (',zn(timezone),').'
+     &                 ,hour,min,sec
+                  write(*,'(i2,a,i2,a,f4.1)')int(hour),':',int(min)
+     &                 ,':',sec
                endif
                   badcount = badcount + 1
                  
