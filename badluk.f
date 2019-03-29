@@ -12,6 +12,7 @@
       integer, parameter :: ba = 25
       integer :: bads(ba,2)
       integer :: times(ba,zs:ze)
+      real :: fyears(ba)
 C     USES flmoon,julday
       rollback = .false.        ! rollback to original output
       check = .false.           ! print check statements (debug)
@@ -147,6 +148,24 @@ c     /output.
             badmin=badcount
          endif
  10   continue
+      if(check) write(*,'(/a)') 'copying...'
+      write(fmt,'(a,i2,a)')'(1x,i2,1x,f6.1,i5,i3,',ntz,'(i3))'
+      do i=1,ba
+         fyears(i)=bads(i,1)+bads(i,2)/12.
+         if((i.le.badtotal).and.check)  write(*,fmt) i,fyears(i),bads(i
+     &        ,1),bads(i,2),times(i,:)
+      enddo
+      call piksr3(ba,fyears,2,bads,ntz,times)
+      k=ba-badtotal             ! calculate leading zeros in arrays
+      if(check) then
+         write(*,'(/a)') 'sorting...'
+         do i=1,ba
+            l=i-k
+            if(i.gt.k)  write(*,fmt) l,fyears(i),bads(i,1)
+     &           ,bads(i,2),times(i,:)
+         enddo
+      endif
+      
       if(.not.rollback) then
          write (*,'(/19x,a,i2,a,i5,a,i5)') 'Found ',badtotal
      &        ,' bad days from',iybeg,' to',iyend
@@ -164,9 +183,10 @@ c     /output.
       write(*,*)'-----------------------------------------------------',
      &'---------------------------------------------------',
      &'-----------------'
-      do, i=1,badtotal
-         write (*,fmt) i, bads(i,2),'/',13,'/'
-     $        ,bads(i,1), (times(i,j),j=zs,ze)
+      do, i=1,ba
+         l=i-k
+         if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
+     $        ,bads(i,1),times(i,:)
       enddo
       endif
       END   
