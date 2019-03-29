@@ -4,7 +4,7 @@
      &     , ntz
       LOGICAL newbad, rollback, check, list
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
-      REAL TIMZON,frac
+      REAL TIMZON,frac,ffrac
       character(len = 7) :: zn(zs:ze) ! Time zone name 
       character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name 
       character(len = 256) :: fmt
@@ -14,7 +14,7 @@
       integer :: times(ba,zs:ze)
       real :: fyears(ba)
 C     USES flmoon,julday
-      rollback = .false.        ! rollback to original output
+      rollback = .true.        ! rollback to original output
       check = .false.           ! print check statements (debug)
       list = .false.            ! print list of dates
       if(rollback) then
@@ -67,15 +67,19 @@ c     adjustment.
                icon=0
  1             call flmoon(n,2,jd,frac) ! Get date of full moon n.
                ifrac=nint(24.*(frac+TIMZON)) ! Convert to hours in correct time zone.
+               ffrac=(24.*(frac+TIMZON)) ! Convert to hours in correct time zone.
                if(ifrac.lt.0)then ! Convert from Julian Days beginning at noon 
                   jd=jd-1       ! to civil days beginning at midnight.
                   ifrac=ifrac+24
+                  ffrac=ffrac+24
                endif
                if(ifrac.gt.12)then
                   jd=jd+1
                   ifrac=ifrac-12
+                  ffrac=ffrac-12
                else
                   ifrac=ifrac+12
+                  ffrac=ffrac+12
                endif
                if(jd.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?
@@ -90,7 +94,6 @@ c     adjustment.
                            whichbad = i
                            if(check)write(*,'(1x,i2,a,i2,a,i4,a)'
      &                          )im,'/',13,'/',iyyy,' already found'
-
                            newbad = .false.
                         endif
                      enddo
@@ -120,6 +123,8 @@ c     adjustment.
                      write (fmt,*)'(1x,a,i2,a,a,a)'
                   endif
                   write (*,fmt) 'Full moon ',ifrac,
+     *                 ' hrs after midnight (',zn(timezone),').'
+                  write (*,*) 'Full moon ',ffrac,
      *                 ' hrs after midnight (',zn(timezone),').'
                endif
                   badcount = badcount + 1
