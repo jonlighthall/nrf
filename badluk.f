@@ -154,18 +154,18 @@ c     /output.
      &        ,' bad days'
          write (*,'(1x,a,i2,a/)') 'The unluckiest zone had ',badmax
      &        ,' bad days'
-      write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,a3))'
-      write (*,fmt) (dzn(j),j=zs,ze)
-      write (*,fmt) (szn(j),j=zs,ze)
-      write (*,fmt) (zn(j),j=zs,ze)
-      write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,sp,i3))'
-      write (*,fmt) (j,j=zs,ze)
-      write (fmt,'(a,i2,a)')'(1x,i2,a,i2,a,i4,',ntz,'(1x,i3))'
+      write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,a3))'
+      write (*,fmt) (dzn(j),j=zs,ze) ! print daylight names
+      write (*,fmt) (szn(j),j=zs,ze) ! print standard names
+      write (*,fmt) (zn(j),j=zs,ze) ! print zone names
+      write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,sp,i3))'
+      write (*,fmt) (j,j=zs,ze) ! print indicies
+      write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,i3))'
       write(*,*)'-----------------------------------------------------',
      &'---------------------------------------------------',
-     &'--------------'
+     &'-----------------'
       do, i=1,badtotal
-         write (*,fmt) bads(i,2),'/',13,'/'
+         write (*,fmt) i, bads(i,2),'/',13,'/'
      $        ,bads(i,1), (times(i,j),j=zs,ze)
       enddo
       endif
