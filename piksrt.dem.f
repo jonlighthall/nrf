@@ -8,13 +8,13 @@ C	Driver for routine PIKSRT
 C	Print original array
 	WRITE(*,*) 'Original array:'
 	DO 11 I=1,10
-		WRITE(*,'(1X,10F6.2)') (A(10*(I-1)+J),J=1,10)
-11	CONTINUE
+	   WRITE(*,'(1X,10F6.2)') (A(10*(I-1)+J),J=1,10)
+ 11	CONTINUE
 C	Sort array
 	CALL PIKSRT(100,A)
 C	Print sorted array
 	WRITE(*,*) 'Sorted array:'
 	DO 12 I=1,10
-		WRITE(*,'(1X,10F6.2)') (A(10*(I-1)+J),J=1,10)
-12	CONTINUE
+	   WRITE(*,'(1X,10F6.2)') (A(10*(I-1)+J),J=1,10)
+ 12	CONTINUE
 	END
