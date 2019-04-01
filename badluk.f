@@ -12,9 +12,11 @@
       integer, parameter :: ba = 25
       integer :: bads(ba,2)
       integer :: times(ba,zs:ze)
+      character(len = 3) :: stimes(ba,zs:ze) ! string times
+      character(len = 5) :: sftimes(ba,zs:ze) ! string fractional times
       real :: fyears(ba)
 C     USES flmoon,julday
-      rollback = .true.        ! rollback to original output
+      rollback = .false.        ! rollback to original output
       check = .false.           ! print check statements (debug)
       list = .false.            ! print list of dates
       if(rollback) then
@@ -27,6 +29,7 @@ C     USES flmoon,julday
      *     iybeg,' to',iyend
       bads = 0
       times = 0
+      stimes = ''
       badmin = 0
       badmax = 0
       badtotal = 0
@@ -42,8 +45,8 @@ c     to include other time zones.
       szn(-8) = 'PST'
       szn(-7) = 'MST'
       szn(-6) = 'CST'
-      zn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
-      szn(-4) = 'AST'
+      szn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
+c      szn(-4) = 'AST'
       zn( 0) = 'GMT'
 c      szn(+1) = 'CET'
       dzn=''
@@ -51,7 +54,7 @@ c      szn(+1) = 'CET'
       dzn(-6) = 'MDT'
       dzn(-5) = 'CDT'
       dzn(-4) = 'EDT'
-      dzn(-3) = 'ADT'
+c      dzn(-3) = 'ADT'
       TIMZON=timezone/24.    
       do 12 iyyy=iybeg,iyend ! Loop over each year,
          do 11 im=1,12       ! and each month.
@@ -176,6 +179,16 @@ c     /output.
      &           ,bads(i,2),times(i,:)
          enddo
       endif
+
+      do i=1,ba
+         do j=zs,ze 
+            if(times(i,j).ne.0) then 
+               write(stimes(i,j),'(i2)')times(i,j)
+            else
+               write(stimes(i,j),'(a2)') '..'
+            endif
+         enddo
+      enddo
       
       if(.not.rollback) then
          write (*,'(/19x,a,i2,a,i5,a,i5)') 'Found ',badtotal
@@ -184,20 +197,30 @@ c     /output.
      &        ,' bad days'
          write (*,'(1x,a,i2,a/)') 'The unluckiest zone had ',badmax
      &        ,' bad days'
-      write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,a3))'
-      write (*,fmt) (dzn(j),j=zs,ze) ! print daylight names
-      write (*,fmt) (szn(j),j=zs,ze) ! print standard names
-      write (*,fmt) (zn(j),j=zs,ze) ! print zone names
+      write (fmt,'(a,i2,a)')'(a,',ntz,'(1x,a3))'
+      write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
+      write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
+      write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names
       write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,sp,i3))'
-      write (*,fmt) (j,j=zs,ze) ! print indicies
-      write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,i3))'
+c      write (*,fmt) (j,j=zs,ze) ! print indicies
+c      write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,i3))'
+c      write(*,*)'-----------------------------------------------------',
+c     &'---------------------------------------------------',
+c     &'-----------------'
+c      do, i=1,ba
+c         l=i-k
+c         if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
+c     $        ,bads(i,1), times(i,:)
+c      enddo
+
+      write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a3))'
       write(*,*)'-----------------------------------------------------',
      &'---------------------------------------------------',
      &'-----------------'
       do, i=1,ba
          l=i-k
          if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
-     $        ,bads(i,1),times(i,:)
+     $        ,bads(i,1),stimes(i,:)
       enddo
       endif
       END   
