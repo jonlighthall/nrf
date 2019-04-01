@@ -2,7 +2,7 @@
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
      &     , ntz, hour, min
-      LOGICAL newbad, rollback, check, list
+      LOGICAL newbad, rollback, check, list, dofrac
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac,ffrac,sec
       character(len = 7) :: zn(zs:ze) ! Time zone name 
@@ -19,6 +19,7 @@ C     USES flmoon,julday
       rollback = .false.        ! rollback to original output
       check = .false.           ! print check statements (debug)
       list = .false.            ! print list of dates
+      dofrac = .false.          ! print hours and minutes
       if(rollback) then
          iybeg=1900
          iyend=2000
@@ -150,7 +151,7 @@ c     adjustment.
                   endif
                   write (*,fmt) 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn(timezone),').'
-                  if(.not.rollback) then
+                  if((.not.rollback).and.dofrac) then
                      write (*,*) 'Full moon ',ffrac,
      *                    ' hrs after midnight (',zn(timezone),').'
      &                    ,hour,min,sec
@@ -217,19 +218,12 @@ c      k=0
      &        ,' bad days'
          write (*,'(1x,a,i2,a/)') 'The unluckiest zone had ',badmax
      &        ,' bad days'
-      write (fmt,'(a,i2,a)')'(a,',ntz,'(1x,a3))'
+         if(.not.dofrac) then
+         write (fmt,'(a,i2,a)')'(a,',ntz,'(1x,a3))'
       write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
       write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
       write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names
       write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,sp,i3))'
-c      write (*,fmt) (j,j=zs,ze) ! print indicies
-c      write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,i3))'
-c      write(*,*) repeat('-',13+4*ntz)
-c      do, i=1,ba
-c         l=i-k
-c         if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
-c     $        ,bads(i,1), times(i,:)
-c      enddo
 
       write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a3))'
          write(*,*) repeat('-',13+4*ntz)
@@ -238,7 +232,7 @@ c      enddo
          if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
      $        ,bads(i,1),stimes(i,:)
       enddo
-      write(*,*)
+      else
       write (fmt,'(a,i2,a)')'(a,',ntz,'(3x,a3))'
       write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
       write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
@@ -251,5 +245,6 @@ c      enddo
          if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
      $        ,bads(i,1),sftimes(i,:)
       enddo
+      endif
       endif
       END   
