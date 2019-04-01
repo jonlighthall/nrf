@@ -29,8 +29,8 @@ C     USES flmoon,julday
      *     iybeg,' to',iyend
       bads = 0
       times = 0
-      stimes = ''
-      sftimes = ''
+      stimes = ' :'
+      sftimes = '  :'
       badmin = 0
       badmax = 0
       badtotal = 0
@@ -44,12 +44,13 @@ c     to include other time zones.
       write (zn(timezone), '(sp,i3,a)') timezone, ' UTC' 
 c     zone names
       zn( 0) = 'GMT'
+      if(rollback) zn(-5) = 'EST' ! Time zone −5 is Eastern Standard Time.
 c     standard time names
       szn=''
       szn(-8) = 'PST'
       szn(-7) = 'MST'
       szn(-6) = 'CST'
-      szn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
+      szn(-5) = 'EST'  
 c      szn(-4) = 'AST'
 c      szn(+1) = 'CET'
 c     daylight saving time names
@@ -123,6 +124,21 @@ c     adjustment.
                   bads(whichbad,1)=iyyy
                   bads(whichbad,2)=im
                   times(whichbad,timezone)=ifrac
+                  write(sftimes(whichbad,timezone),'(i0.2,a,i0.2)')hour
+     &                 ,':',min
+                  if((ffrac.gt.1).and.(ffrac.lt.1.5)) then
+                     if(check) then 
+                        write(*,'(a,i4,a,i2,a,a5,a,a5)'
+     &                       )'margin found: yr=',iyyy,' m=',im,' t0='
+     &                       ,sftimes(whichbad,timezone),' t-1='
+     &                       ,sftimes(whichbad,timezone-1)
+                        write(*,'(a,i0.2,a,i0.2,a,sp,i3)')
+     &                       'new time should be ',hour-1,':',min,
+     &                       ' in zone ',timezone-1
+                     endif
+                     write(sftimes(whichbad,timezone-1),
+     &                    '(i0.2,a,i0.2)')hour-1,':',min
+                  endif
                   if( (rollback.and.(timezone.eq.-5).or.
      &                 (.not.rollback).and.list.and.newbad) ) then
                   write (*,'(/1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
@@ -134,13 +150,15 @@ c     adjustment.
                   endif
                   write (*,fmt) 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn(timezone),').'
-                  write (*,*) 'Full moon ',ffrac,
-     *                 ' hrs after midnight (',zn(timezone),').'
-     &                 ,hour,min,sec
-                  write(*,'(i2,a,i2,a,f4.1)')int(hour),':',int(min)
-     &                 ,':',sec
+                  if(.not.rollback) then
+                     write (*,*) 'Full moon ',ffrac,
+     *                    ' hrs after midnight (',zn(timezone),').'
+     &                    ,hour,min,sec
+                     write(*,'(i2,a,i2,a,f4.1)')int(hour),':',int(min)
+     &                    ,':',sec
+                  endif
                endif
-                  badcount = badcount + 1
+               badcount = badcount + 1
                  
 c     Don't worry if you are unfamiliar with FORTRAN's esoteric input
 c     /output statements; very few programs in this book do any input
@@ -174,6 +192,7 @@ c     /output.
      &        ,1),bads(i,2),times(i,:)
       enddo
       call piksr3(ba,fyears,2,bads,ntz,times)
+c      call piksr4(ba,fyears,2,bads,ntz,times,7,sftimes)
       k=ba-badtotal             ! calculate leading zeros in arrays
 c      k=0
       if(check) then
@@ -187,11 +206,7 @@ c      k=0
 
       do i=1,ba
          do j=zs,ze 
-            if(times(i,j).ne.0) then 
-               write(stimes(i,j),'(i2)')times(i,j)
-            else
-               write(stimes(i,j),'(a2)') ' :'
-            endif
+            if(times(i,j).ne.0) write(stimes(i,j),'(i2)')times(i,j)
          enddo
       enddo
       
@@ -222,6 +237,19 @@ c      enddo
          l=i-k
          if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
      $        ,bads(i,1),stimes(i,:)
+      enddo
+      
+      write (fmt,'(a,i2,a)')'(a,',ntz,'(3x,a3))'
+      write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
+      write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
+      write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names      
+      write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a5))'
+      write(*,*) repeat('-',13+6*ntz)
+  
+      do, i=1,badtotal
+         l=i-k
+         if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
+     $        ,bads(i,1),sftimes(i,:)
       enddo
       endif
       END   
