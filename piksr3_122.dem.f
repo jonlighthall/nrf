@@ -1,5 +1,5 @@
 	PROGRAM D8R2
-C	Driver for routine PIKSR2
+C	Driver for routine PIKSR3_122
 	DIMENSION A(100),B(100),C(100)
 	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
 	CHARACTER(LEN = 256) :: FMT
