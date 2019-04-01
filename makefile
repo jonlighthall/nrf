@@ -6,7 +6,7 @@ fcflags = -std=legacy
 flflags = -c $(fcflags)
 
 all: flmoon.exe julday.exe badluk.exe caldat.exe piksrt.exe piksr2.exe \
-	 piksr3.exe piksr3_122.exe 
+	 piksr3.exe piksr3_122.exe piksr4_1222.exe
 
 flmoon.exe: flmoon.dem.o flmoon.o julday.o caldat.o
 	$(your_f77) $(fcflags) $^ -o $@
@@ -14,7 +14,7 @@ flmoon.exe: flmoon.dem.o flmoon.o julday.o caldat.o
 julday.exe: julday.dem.o julday.o
 	$(your_f77) $(fcflags) $^ -o $@
 
-badluk.exe: badluk.o flmoon.o julday.o piksr3_122.o
+badluk.exe: badluk.o flmoon.o julday.o piksr4_1222.o
 	$(your_f77) $(fcflags) $^ -o $@
 
 caldat.exe: caldat.dem.o julday.o caldat.o
@@ -30,6 +30,9 @@ piksr3.exe: piksr3.dem.o piksr3.o
 	$(your_f77) $(fcflags) $^ -o $@
 
 piksr3_122.exe: piksr3_122.dem.o piksr3_122.o
+	$(your_f77) $(fcflags) $^ -o $@
+
+piksr4_1222.exe: piksr4_1222.dem.o piksr4_1222.o
 	$(your_f77) $(fcflags) $^ -o $@
 
 %.o: %.f	

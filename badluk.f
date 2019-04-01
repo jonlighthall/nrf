@@ -191,8 +191,8 @@ c     /output.
          if((i.le.badtotal).and.check)  write(*,fmt) i,fyears(i),bads(i
      &        ,1),bads(i,2),times(i,:)
       enddo
-      call piksr3(ba,fyears,2,bads,ntz,times)
-c      call piksr4(ba,fyears,2,bads,ntz,times,7,sftimes)
+c      call piksr3(ba,fyears,2,bads,ntz,times)
+      call piksr4(ba,fyears,2,bads,ntz,times,5,sftimes)
       k=ba-badtotal             ! calculate leading zeros in arrays
 c      k=0
       if(check) then
@@ -238,7 +238,7 @@ c      enddo
          if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
      $        ,bads(i,1),stimes(i,:)
       enddo
-      
+      write(*,*)
       write (fmt,'(a,i2,a)')'(a,',ntz,'(3x,a3))'
       write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
       write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
@@ -246,7 +246,7 @@ c      enddo
       write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a5))'
       write(*,*) repeat('-',13+6*ntz)
   
-      do, i=1,badtotal
+      do, i=1,ba
          l=i-k
          if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
      $        ,bads(i,1),sftimes(i,:)
