@@ -1,10 +1,10 @@
       PROGRAM badluk
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
-     &     , ntz
+     &     , ntz, hour, min
       LOGICAL newbad, rollback, check, list
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
-      REAL TIMZON,frac,ffrac,hour,min,sec
+      REAL TIMZON,frac,ffrac,sec
       character(len = 7) :: zn(zs:ze) ! Time zone name 
       character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name 
       character(len = 256) :: fmt
@@ -30,6 +30,7 @@ C     USES flmoon,julday
       bads = 0
       times = 0
       stimes = ''
+      sftimes = ''
       badmin = 0
       badmax = 0
       badtotal = 0
@@ -41,14 +42,17 @@ c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
       badcount = 0
       write (zn(timezone), '(sp,i3,a)') timezone, ' UTC' 
+c     zone names
+      zn( 0) = 'GMT'
+c     standard time names
       szn=''
       szn(-8) = 'PST'
       szn(-7) = 'MST'
       szn(-6) = 'CST'
       szn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
 c      szn(-4) = 'AST'
-      zn( 0) = 'GMT'
 c      szn(+1) = 'CET'
+c     daylight saving time names
       dzn=''
       dzn(-7) = 'PDT'
       dzn(-6) = 'MDT'
@@ -84,6 +88,9 @@ c     adjustment.
                   ifrac=ifrac+12
                   ffrac=ffrac+12
                endif
+               hour=int(ffrac)
+               min=int((ffrac-hour)*60)
+               sec=((ffrac-hour)*60-min)*60
                if(jd.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?
                      if(check)write(*,*)'found first bad day!'
@@ -127,9 +134,6 @@ c     adjustment.
                   endif
                   write (*,fmt) 'Full moon ',ifrac,
      *                 ' hrs after midnight (',zn(timezone),').'
-                  hour=int(ffrac)
-                  min=int((ffrac-hour)*60)
-                  sec=((ffrac-hour)*60-min)*60
                   write (*,*) 'Full moon ',ffrac,
      *                 ' hrs after midnight (',zn(timezone),').'
      &                 ,hour,min,sec
@@ -171,6 +175,7 @@ c     /output.
       enddo
       call piksr3(ba,fyears,2,bads,ntz,times)
       k=ba-badtotal             ! calculate leading zeros in arrays
+c      k=0
       if(check) then
          write(*,'(/a)') 'sorting...'
          do i=1,ba
@@ -185,7 +190,7 @@ c     /output.
             if(times(i,j).ne.0) then 
                write(stimes(i,j),'(i2)')times(i,j)
             else
-               write(stimes(i,j),'(a2)') '..'
+               write(stimes(i,j),'(a2)') ' :'
             endif
          enddo
       enddo
@@ -204,9 +209,7 @@ c     /output.
       write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,sp,i3))'
 c      write (*,fmt) (j,j=zs,ze) ! print indicies
 c      write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,i3))'
-c      write(*,*)'-----------------------------------------------------',
-c     &'---------------------------------------------------',
-c     &'-----------------'
+c      write(*,*) repeat('-',13+4*ntz)
 c      do, i=1,ba
 c         l=i-k
 c         if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
@@ -214,9 +217,7 @@ c     $        ,bads(i,1), times(i,:)
 c      enddo
 
       write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a3))'
-      write(*,*)'-----------------------------------------------------',
-     &'---------------------------------------------------',
-     &'-----------------'
+         write(*,*) repeat('-',13+4*ntz)
       do, i=1,ba
          l=i-k
          if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
