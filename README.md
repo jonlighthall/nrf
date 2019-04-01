@@ -2,8 +2,8 @@
 
 ## Subroutines by Chapter and Section
 
-| sect | program              | description                           | dependencies |
-| ---- | -------------------- | ------------------------------------  | -------------|
+| sect | program              | description                           | 
+| ---- | -------------------- | ------------------------------------  | 
 |  1.0 | [`flmoon`](flmoon.f) | calculate phases of the moon by date  |
 |  1.1 | [`julday`](julday.f) | Julian Day number from calendar date  |
 |  1.1 | [`caldat`](caldat.f) | calendar date from Julian day number  |
