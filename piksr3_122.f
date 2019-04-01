@@ -1,10 +1,9 @@
       SUBROUTINE piksr3(n,arr,bn,brr,cn,crr)
       INTEGER n,bn,cn
-      REAL arr(n)
-      integer brr(n,bn),crr(n,cn)
+      REAL arr(n),brr(n,bn),crr(n,cn)
 c     Sorts a 1D array arr(1:n) into ascending numerical order, by
 c     straight insertion, while making the corresponding rearrangement
-c     of the 2D arrays brr(1:n,1:bn) anc crr(1:n,1:cn).
+c     of the 2D arrays brr(1:n,1:bn) and crr(1:n,1:cn).
       INTEGER i,j
       REAL a
       real b(bn),c(cn)
