@@ -21,6 +21,13 @@
 |  --- | [`piksrt`](piksrt.dem.f) | sort an array by straight insertion   | `piksrt`                     | `tarray.dat`|
 |  --- | [`piksr2`](piksr2.dem.f) | sort two arrays by straight insertion | `piksr2`                     | `tarray.dat`|
 
+## Additional subroutines
+
+| program                  | description                           | input       |
+| ------------------------ | ------------------------------------- | ----------- |
+| [`piksr3`](piksr3.f) | sort three arrays by straight insertion   | `tarray.dat`|
+| [`piksr3_122`](piksr3_122.f) | sort an array and two matricies by straight insertion | `tarray.dat`|
+
 ## Installation
 ### Cloning
 Clone the reposity with one of the following commands.
@@ -29,11 +36,11 @@ Clone the reposity with one of the following commands.
 
 `git clone git@github.com:jonlighthall/nrf.git` (Git SSH)
 ### Compiling
-The demonstration programs can be compiled with the following commands.
+The demonstration programs can be compiled using the [`makefile`](makefile). Alternatively, the following commands my be used.
 ````bash
 gfortran -std=legacy flmoon.dem.f flmoon.f julday.f caldat.f
 gfortran -std=legacy julday.dem.f julday.f
-gfortran -std=legacy badluk.f  flmoon.f julday.f
+gfortran -std=legacy badluk.f  flmoon.f julday.f piksr3_122.f
 gfortran -std=legacy caldat.dem.f julday.f caldat.f
 
 ````
