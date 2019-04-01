@@ -2,24 +2,15 @@
       INTEGER n,bn,cn
       REAL arr(n)
       integer brr(n,bn),crr(n,cn)
-c     Sorts an array arr(1:n) into ascending numerical order, by
+c     Sorts a 1D array arr(1:n) into ascending numerical order, by
 c     straight insertion, while making the corresponding rearrangement
-c     of the array brr(1:n).
+c     of the 2D arrays brr(1:n,1:bn) anc crr(1:n,1:cn).
       INTEGER i,j
       REAL a
       real b(bn),c(cn)
-c$$$      write(*,*) 'n=',n
-c$$$      write(*,*) arr
-c$$$      write(*,*) 'bn=',bn
-c$$$      write(*,*) brr
-c$$$      write(*,*) 'cn=',cn
-c$$$      write(*,*) crr
-
-
       do 12 j=2,n               ! Pick out each element in turn.
          a=arr(j)
          b=brr(j,:)
-c         write(*,*) b
          c=crr(j, :)
          do 11 i=j-1,1,-1       ! Look for the place to insert it.
             if(arr(i).le.a)goto 10

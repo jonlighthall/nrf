@@ -3,7 +3,7 @@
       REAL arr(n),brr(n),crr(n)
 c     Sorts an array arr(1:n) into ascending numerical order, by
 c     straight insertion, while making the corresponding rearrangement
-c     of the array brr(1:n).
+c     of the arrays brr(1:n) and crr(1:n).
       INTEGER i,j
       REAL a,b,c
       do 12 j=2,n               ! Pick out each element in turn.
