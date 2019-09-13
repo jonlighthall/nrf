@@ -41,6 +41,7 @@ C     USES flmoon,julday
 c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
+      if(check) write(*,'(a,i3,a)')'testing zone',timezone,'...'
       badcount = 0
       write (zn(timezone), '(sp,i3,a)') timezone, ' UTC' 
 c     zone names
@@ -82,7 +83,7 @@ c     adjustment.
                   ifrac=ifrac+24
                   ffrac=ffrac+24
                endif
-               if(ifrac.gt.12)then
+               if((ifrac.gt.12).or.(ffrac.gt.12.0))then
                   jd=jd+1
                   ifrac=ifrac-12
                   ffrac=ffrac-12
@@ -90,6 +91,12 @@ c     adjustment.
                   ifrac=ifrac+12
                   ffrac=ffrac+12
                endif
+c     The following check is required for timezones > +12
+               if((ifrac.gt.24).or.(ffrac.gt.24.0))then
+                  jd=jd+1
+                  ifrac=ifrac-24
+                  ffrac=ffrac-24
+              endif
                hour=int(ffrac)
                min=int((ffrac-hour)*60)
                sec=((ffrac-hour)*60-min)*60
@@ -99,7 +106,8 @@ c     adjustment.
                      badtotal = 1
                      whichbad = badtotal
                   else          ! not first
-                     if(check)write(*,*)'found a bad day. checking...'
+                     if(check)write(*,*)'found a bad day at ',hour,':'
+     &                    ,min,'. checking...'
                      newbad = .true.
                      do i=1,badtotal ! check
                       if((iyyy.eq.bads(i,1)).and.(im.eq.bads(i,2))) then
