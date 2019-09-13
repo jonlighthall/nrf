@@ -216,6 +216,8 @@ c      k=0
       do i=1,ba
          do j=zs,ze 
             if(times(i,j).ne.0) write(stimes(i,j),'(i2)')times(i,j)
+            if((times(i,j).eq.0).and.(sftimes(i,j).ne.'  :'))
+     &           write(stimes(i,j),'(i2)')0
          enddo
       enddo
       
