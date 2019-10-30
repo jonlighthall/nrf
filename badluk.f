@@ -124,12 +124,12 @@ c     The following check is required for timezones > +12
                      if(newbad)then ! new?
                         badtotal = badtotal +1
                         whichbad = badtotal
-                        if(badtotal.lt.ba)then
+                        if(badtotal.le.ba)then
                            if(check) write(*,'(a,i2)')
      &                          ' found new bad day! count = ',badtotal
                         else
-                           write(*,*) 'too many bad days. 
-     &increase array size!'
+                           write(*,'(a,i3)') ' Too many bad days!
+     & Increase array size >',badtotal
                            return
                         endif
                      endif      ! end new?
@@ -162,13 +162,12 @@ c     The following check is required for timezones > +12
                      write (fmt,*)'(1x,a,i2,a,a,a)'
                   endif
                   write (*,fmt) 'Full moon ',ifrac,
-     *                 ' hrs after midnight (',zn(timezone),').'
+     &                 ' hrs after midnight (',zn(timezone),')'
                   if((.not.rollback).and.dofrac) then
-                     write (*,*) 'Full moon ',ffrac,
-     *                    ' hrs after midnight (',zn(timezone),').'
-     &                    ,hour,min,sec
-                     write(*,'(i2,a,i2,a,f4.1)')int(hour),':',int(min)
-     &                    ,':',sec
+                     write (*,'(1x,a,f4.1,a,a,a,i2,a,i2,a,i0.2,f0.1)')
+     &                    'Full moon ',ffrac,' hrs after midnight ('
+     &                    ,zn(timezone),') at',hour,':',min,':',int(sec)
+     &                    ,sec-int(sec)
                   endif
                endif
                badcount = badcount + 1
