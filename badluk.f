@@ -93,6 +93,9 @@ c     adjustment.
                endif
 c     The following check is required for timezones > +12
                if((ifrac.gt.24).or.(ffrac.gt.24.0))then
+                  if(check)write(*,'(a,i4,a,i2,a,f4.1,a,f4.1)'
+     &                 )' found overflow: yr=',iyyy,' m=',im
+     &                 ,' d0=13 t0=',ffrac,'; d=14, t=',ffrac-24
                   jd=jd+1
                   ifrac=ifrac-24
                   ffrac=ffrac-24
@@ -140,7 +143,7 @@ c     The following check is required for timezones > +12
                      if(check) then 
                         write(*,'(a,i4,a,i2,a,a5,a,a5)'
      &                       )'  found margin: yr=',iyyy,' m=',im,' t0='
-     &                       ,sftimes(whichbad,timezone),' t-1='
+     &                       ,sftimes(whichbad,timezone),'; t='
      &                       ,sftimes(whichbad,timezone-1)
                         write(*,'(a,i0.2,a,i0.2,a,sp,i3)')
      &                       '  new time should be ',hour-1,':',min,
