@@ -237,23 +237,23 @@ c      k=0
          write (*,'(1x,a,i2,a/)') 'The unluckiest zone had ',badmax
      &        ,' bad days'
          if(.not.dofrac) then   ! print hours only
-         write (fmt,'(a,i2,a)')'(a,',ntz,'(1x,a3))'
+      write (fmt,'(a,i2,a)')'(a,',ntz,'(1x,a3))'
       write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
       write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
       write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names
       write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,sp,i3))'
-
       write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a3))'
-         write(*,*) repeat('-',13+4*ntz)
+      write(*,*) repeat('-',13+4*ntz)
       do, i=1,ba
          l=i-k
          if(i.gt.k) then
             write (*,fmt,advance='no') l,bads(i,2),'/',13,'/'
-     $        ,bads(i,1),stimes(i,:)
-               if(bads(i,3).eq.24) write(*,'(a)',advance='no')' *'
+     $           ,bads(i,1),stimes(i,:)
+            if(bads(i,3).eq.24) write(*,'(a)',advance='no')' *'
             write(*,*)
-            endif
+         endif
       enddo
+      if(allbad)write(*,*)repeat("-",13+4*ntz)
       else                      ! print fractional hours
       write (fmt,'(a,i2,a)')'(a,',ntz,'(3x,a3))'
       write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
@@ -261,7 +261,6 @@ c      k=0
       write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names      
       write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a5))'
       write(*,*) repeat('-',13+6*ntz)
-  
       do, i=1,ba
          l=i-k
          if(i.gt.k) then
@@ -269,12 +268,12 @@ c      k=0
      $           ,bads(i,1),sftimes(i,:)
             if(bads(i,3).eq.24) write(*,'(a)',advance='no')' *'
             write(*,*)
-            endif
+         endif
       enddo
+      write(*,*)repeat("-",13+6*ntz)
       endif
-      if(dofrac.or.allbad) write(*,*) !repeat('-',13+6*ntz)
+      if(allbad) write(*,*) ' * World-wide bad luck'
       if(dofrac) write(*,'(2x,a)'
      &     )'Warning: times do not include atmospheric refraction.'
-      if(allbad) write(*,*) ' * World-wide bad luck'
       endif
       END   
