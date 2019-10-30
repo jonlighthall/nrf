@@ -9,13 +9,19 @@
       character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name 
       character(len = 256) :: fmt
       DATA iybeg,iyend /1900,2050/ ! The range of dates to be searched.
-      integer, parameter :: ba = 25
-      integer :: bads(ba,3)     !year,month,count
-      integer :: times(ba,zs:ze)
-      character(len = 3) :: stimes(ba,zs:ze) ! string times
-      character(len = 5) :: sftimes(ba,zs:ze) ! string fractional times
-      real :: fyears(ba)
+      integer size
+      integer,allocatable :: bads(:,:)     !year,month,count
+      integer,allocatable :: times(:,:)
+      character(len = 3),allocatable :: stimes(:,:) ! string times
+      character(len = 5),allocatable :: sftimes(:,:) ! string fractional times
+      real,allocatable :: fyears(:)
 C     USES flmoon,julday
+
+c     allocate array size
+      size=(iyend-iybeg)*12
+      allocate(bads(size,3),times(size,zs:ze),stimes(size,zs:ze)
+     &     ,sftimes(size,zs:ze),fyears(size))
+
       rollback = .false.        ! rollback to original output
       check = .false.           ! print check statements (debug)
       list = .false.            ! print dates as they are found
@@ -127,7 +133,7 @@ c     The following check is required for timezones > +12
                      if(newbad)then ! new?
                         badtotal = badtotal +1
                         whichbad = badtotal
-                        if(badtotal.le.ba)then
+                        if(badtotal.le.size)then
                            if(check) write(*,'(a,i2)')
      &                          ' found new bad day! count = ',badtotal
                         else
@@ -203,25 +209,23 @@ c     /output.
  10   continue
       if(check) write(*,'(/a)') 'copying...'
       write(fmt,'(a,i2,a)')'(1x,i2,1x,f6.1,i5,i3,',ntz,'(i3))'
-      do i=1,ba
+      do i=1,size
          fyears(i)=bads(i,1)+bads(i,2)/12.
          if((i.le.badtotal).and.check)  write(*,fmt) i,fyears(i),bads(i
      &        ,1),bads(i,2),times(i,:)
       enddo
-c      call piksr3(ba,fyears,2,bads,ntz,times)
-      call piksr4(ba,fyears,3,bads,ntz,times,5,sftimes)
-      k=ba-badtotal             ! calculate leading zeros in arrays
-c      k=0
+      call piksr4(size,fyears,3,bads,ntz,times,5,sftimes)
+      k=size-badtotal             ! calculate leading zeros in arrays
       if(check) then
          write(*,'(/a)') 'sorting...'
-         do i=1,ba
+         do i=1,size
             l=i-k
             if(i.gt.k)  write(*,fmt) l,fyears(i),bads(i,1)
      &           ,bads(i,2),times(i,:)
          enddo
       endif
 
-      do i=1,ba
+      do i=1,size
          do j=zs,ze 
             if(times(i,j).ne.0) write(stimes(i,j),'(i2)')times(i,j)
             if((times(i,j).eq.0).and.(sftimes(i,j).ne.'  :'))
@@ -244,7 +248,7 @@ c      k=0
       write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,sp,i3))'
       write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a3))'
       write(*,*) repeat('-',13+4*ntz)
-      do, i=1,ba
+      do, i=1,size
          l=i-k
          if(i.gt.k) then
             write (*,fmt,advance='no') l,bads(i,2),'/',13,'/'
@@ -261,7 +265,7 @@ c      k=0
       write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names      
       write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a5))'
       write(*,*) repeat('-',13+6*ntz)
-      do, i=1,ba
+      do, i=1,size
          l=i-k
          if(i.gt.k) then
             write (*,fmt,advance='no') l,bads(i,2),'/',13,'/'
