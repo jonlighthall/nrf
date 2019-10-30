@@ -18,7 +18,7 @@
 C     USES flmoon,julday
       rollback = .false.        ! rollback to original output
       check = .false.           ! print check statements (debug)
-      list = .false.            ! print list of dates
+      list = .false.            ! print dates as they are found
       dofrac = .false.          ! print hours and minutes
       if(rollback) then
          iybeg=1900
@@ -41,7 +41,7 @@ C     USES flmoon,julday
 c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
-      if(check) write(*,'(a,i3,a)')'testing zone',timezone,'...'
+      if(check) write(*,'(a,sp,i4,a)')'testing zone',timezone,'...'
       badcount = 0
       write (zn(timezone), '(sp,i3,a)') timezone, ' UTC' 
 c     zone names
@@ -106,8 +106,9 @@ c     The following check is required for timezones > +12
                      badtotal = 1
                      whichbad = badtotal
                   else          ! not first
-                     if(check)write(*,*)'found a bad day at ',hour,':'
-     &                    ,min,'. checking...'
+                     if(check)write(*,'(a,i0.2,a,i0.2,a)',advance='no'
+     &                    )' found a bad day at ',hour,':',min
+     &                    ,'. checking...'
                      newbad = .true.
                      do i=1,badtotal ! check
                       if((iyyy.eq.bads(i,1)).and.(im.eq.bads(i,2))) then
@@ -122,7 +123,7 @@ c     The following check is required for timezones > +12
                         whichbad = badtotal
                         if(badtotal.lt.ba)then
                            if(check) write(*,'(a,i2)')
-     &                          'found new bad day! count = ',badtotal
+     &                          ' found new bad day! count = ',badtotal
                         else
                            write(*,*) 'too many bad days. 
      &increase array size!'
@@ -138,11 +139,11 @@ c     The following check is required for timezones > +12
                   if((ffrac.gt.1).and.(ffrac.lt.1.5)) then
                      if(check) then 
                         write(*,'(a,i4,a,i2,a,a5,a,a5)'
-     &                       )'margin found: yr=',iyyy,' m=',im,' t0='
+     &                       )'  found margin: yr=',iyyy,' m=',im,' t0='
      &                       ,sftimes(whichbad,timezone),' t-1='
      &                       ,sftimes(whichbad,timezone-1)
                         write(*,'(a,i0.2,a,i0.2,a,sp,i3)')
-     &                       'new time should be ',hour-1,':',min,
+     &                       '  new time should be ',hour-1,':',min,
      &                       ' in zone ',timezone-1
                      endif
                      write(sftimes(whichbad,timezone-1),
@@ -184,7 +185,7 @@ c     /output.
             endif
  11      continue
  12   continue
-      if(check) write (*,'(a,i2,a)') 'found ',badcount
+      if(check) write (*,'(a,i2,a)') ' found ',badcount
      &     ,' bad days in zone'
          if(badcount.gt.badmax)then
             badmax=badcount
