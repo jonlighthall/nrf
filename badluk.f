@@ -2,7 +2,7 @@
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
      &     , ntz, hour, min
-      LOGICAL newbad, rollback, check, list, dofrac
+      LOGICAL newbad, rollback, check, list, dofrac, allbad
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac,ffrac,sec
       character(len = 7) :: zn(zs:ze) ! Time zone name 
@@ -10,7 +10,7 @@
       character(len = 256) :: fmt
       DATA iybeg,iyend /1900,2050/ ! The range of dates to be searched.
       integer, parameter :: ba = 25
-      integer :: bads(ba,2)
+      integer :: bads(ba,3)     !year,month,count
       integer :: times(ba,zs:ze)
       character(len = 3) :: stimes(ba,zs:ze) ! string times
       character(len = 5) :: sftimes(ba,zs:ze) ! string fractional times
@@ -36,6 +36,7 @@ C     USES flmoon,julday
       badmax = 0
       badtotal = 0
       whichbad = 0
+      allbad = .false.
       ntz=ze-zs+1
       do 10 timezone = zs, ze  
 c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
@@ -105,7 +106,8 @@ c     The following check is required for timezones > +12
                sec=((ffrac-hour)*60-min)*60
                if(jd.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?
-                     if(check)write(*,*)'found first bad day!'
+                     if(check)write(*,'(1x,a,i2,a,i2,a,i4)'
+     &                    )'found first bad day!',im,'/',13,'/',iyyy
                      badtotal = 1
                      whichbad = badtotal
                   else          ! not first
@@ -116,8 +118,9 @@ c     The following check is required for timezones > +12
                      do i=1,badtotal ! check
                       if((iyyy.eq.bads(i,1)).and.(im.eq.bads(i,2))) then
                            whichbad = i
-                           if(check)write(*,'(1x,i2,a,i2,a,i4,a)'
-     &                          )im,'/',13,'/',iyyy,' already found'
+                           if(check)write(*,'(1x,i2,a,i2,a,i4,a,i2)'
+     &                          )im,'/',13,'/',iyyy,' already found '
+     &                          ,bads(i,3)
                            newbad = .false.
                         endif
                      enddo
@@ -136,6 +139,8 @@ c     The following check is required for timezones > +12
                   endif         ! end first?                 
                   bads(whichbad,1)=iyyy
                   bads(whichbad,2)=im
+                  bads(whichbad,3)=bads(whichbad,3)+1
+                  if(bads(whichbad,3)+1.eq.24)allbad=.true.
                   times(whichbad,timezone)=ifrac
                   write(sftimes(whichbad,timezone),'(i0.2,a,i0.2)')hour
      &                 ,':',min
@@ -204,7 +209,7 @@ c     /output.
      &        ,1),bads(i,2),times(i,:)
       enddo
 c      call piksr3(ba,fyears,2,bads,ntz,times)
-      call piksr4(ba,fyears,2,bads,ntz,times,5,sftimes)
+      call piksr4(ba,fyears,3,bads,ntz,times,5,sftimes)
       k=ba-badtotal             ! calculate leading zeros in arrays
 c      k=0
       if(check) then
@@ -231,7 +236,7 @@ c      k=0
      &        ,' bad days'
          write (*,'(1x,a,i2,a/)') 'The unluckiest zone had ',badmax
      &        ,' bad days'
-         if(.not.dofrac) then
+         if(.not.dofrac) then   ! print hours only
          write (fmt,'(a,i2,a)')'(a,',ntz,'(1x,a3))'
       write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
       write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
@@ -242,10 +247,14 @@ c      k=0
          write(*,*) repeat('-',13+4*ntz)
       do, i=1,ba
          l=i-k
-         if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
+         if(i.gt.k) then
+            write (*,fmt,advance='no') l,bads(i,2),'/',13,'/'
      $        ,bads(i,1),stimes(i,:)
+               if(bads(i,3).eq.24) write(*,'(a)',advance='no')' *'
+            write(*,*)
+            endif
       enddo
-      else
+      else                      ! print fractional hours
       write (fmt,'(a,i2,a)')'(a,',ntz,'(3x,a3))'
       write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
       write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
@@ -255,9 +264,17 @@ c      k=0
   
       do, i=1,ba
          l=i-k
-         if(i.gt.k) write (*,fmt) l,bads(i,2),'/',13,'/'
-     $        ,bads(i,1),sftimes(i,:)
+         if(i.gt.k) then
+            write (*,fmt,advance='no') l,bads(i,2),'/',13,'/'
+     $           ,bads(i,1),sftimes(i,:)
+            if(bads(i,3).eq.24) write(*,'(a)',advance='no')' *'
+            write(*,*)
+            endif
       enddo
       endif
+      if(dofrac.or.allbad) write(*,*) !repeat('-',13+6*ntz)
+      if(dofrac) write(*,'(2x,a)'
+     &     )'Warning: times do not include atmospheric refraction.'
+      if(allbad) write(*,*) ' * World-wide bad luck'
       endif
       END   
