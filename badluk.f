@@ -257,7 +257,9 @@ c     /output.
             write(*,*)
          endif
       enddo
-      if(allbad)write(*,*)repeat("-",13+4*ntz)
+      write(*,*)repeat("-",13+4*ntz)
+      write(*,'(2x,a)'
+     &     )'Note: times are rounded to the nearest hour.'
       else                      ! print fractional hours
       write (fmt,'(a,i2,a)')'(a,',ntz,'(3x,a3))'
       write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
@@ -275,9 +277,9 @@ c     /output.
          endif
       enddo
       write(*,*)repeat("-",13+6*ntz)
+      write(*,'(2x,a)'
+     &     )'Warning: times do not include atmospheric refraction.'
       endif
       if(allbad) write(*,*) ' * World-wide bad luck'
-      if(dofrac) write(*,'(2x,a)'
-     &     )'Warning: times do not include atmospheric refraction.'
       endif
       END   
