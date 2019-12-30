@@ -278,7 +278,7 @@ c     /output.
       enddo
       write(*,*)repeat("-",13+6*ntz)
       write(*,'(2x,a)'
-     &     )'Warning: times do not include atmospheric refraction.'
+     &     )'Note: times do not include atmospheric refraction.'
       endif
       if(allbad) write(*,*) ' * World-wide bad luck'
       endif
