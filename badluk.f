@@ -17,15 +17,17 @@
       real,allocatable :: fyears(:)
 C     USES flmoon,julday
 
+c     compile options
+      rollback = .false.        ! rollback to original output
+      check = .false.           ! print check statements (debug)
+      list = .false.            ! print dates as they are found
+      dofrac = .false.          ! print factional hours (minutes)
+
 c     allocate array size
       size=(iyend-iybeg)*12
       allocate(bads(size,3),times(size,zs:ze),stimes(size,zs:ze)
      &     ,sftimes(size,zs:ze),fyears(size))
 
-      rollback = .false.        ! rollback to original output
-      check = .false.           ! print check statements (debug)
-      list = .false.            ! print dates as they are found
-      dofrac = .false.          ! print hours and minutes
       if(rollback) then
          iybeg=1900
          iyend=2000
