@@ -16,7 +16,7 @@ C	Approximate number of full moons since January 1900
 	J1=JULDAY(IM,ID,IY)
 	CALL FLMOON(N,NPH,J2,FRAC)
 	N=N+(J1-J2)/28.0
-	WRITE(*,'(/1X,A,T15,A,T27,A,T38,A)') 'Lunation','Date'
+	WRITE(*,'(/1X,A,T15,A,T27,A,T45,A)') 'Lunation','Date'
 	1    ,'Time(CST)','Phase'
 	DO 11 I=1,20
 		CALL FLMOON(N,NPH,J2,FRAC)
@@ -45,8 +45,9 @@ C	Approximate number of full moons since January 1900
 			ISTR=1
 		ENDIF
 		CALL CALDAT(J2,IM,ID,IY)
-		WRITE(*,'(2X,I5,3X,2I3,I5,T28,I2,A,5X,A,i0.2,a,i0.2)') N-284
-	1	     ,IM,ID,IY,IFRAC,TIMSTR(ISTR),PHASE(NPH+1),hour,':',min
+		WRITE(*,'(2X,I5,3X,2I3,I5,T26,i0.2,a,i0.2,1x,a,I2,2A,4X,A)') N-284
+	1	     ,IM,ID,IY,hour,':',min,'-> ',IFRAC,TIMSTR(ISTR),''
+	1	     ,PHASE(NPH+1)
 		IF (NPH.EQ.3) THEN
 			NPH=0
 			N=N+1
