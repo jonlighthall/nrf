@@ -1,6 +1,6 @@
 # compiler
 your_f77 = pgfortran
-#export PGI_OBJSUFFIX=o
+export PGI_OBJSUFFIX=o
 # compile flags
 fcflags =
 # link flags
@@ -26,6 +26,7 @@ caldat.exe: caldat.dem.o julday.o caldat.o
 
 clean:
 	rm -fv *.o
+	rm -fv *.obj
 	rm -fv *.exe
 	rm -fv *.out
 	rm -fv fort.*
