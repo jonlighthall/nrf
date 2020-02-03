@@ -45,7 +45,7 @@ C	Approximate number of full moons since January 1900
 		CALL CALDAT(J2,IM,ID,IY)
 		hour=int(ffrac)
 		min=int((ffrac-hour)*60)
-		WRITE(*,'(2X,I5,3X,2I3,I5,T28,I2,A,5X,A,i2,a,i2)') N-284
+		WRITE(*,'(2X,I5,3X,2I3,I5,T28,I2,A,5X,A,i2,a,i0.2)') N-284
 	1	     ,IM,ID,IY,IFRAC,TIMSTR(ISTR),PHASE(NPH+1),hour,':',min
 		IF (NPH.EQ.3) THEN
 			NPH=0
