@@ -1,21 +1,33 @@
       PROGRAM badluk
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
-     &     , ntz
-      LOGICAL newbad, rollback, check, list
+     &     , ntz, hour, min
+      LOGICAL newbad, rollback, check, list, dofrac, allbad
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
-      REAL TIMZON,frac
+      REAL TIMZON,frac,ffrac,sec
       character(len = 7) :: zn(zs:ze) ! Time zone name 
       character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name 
       character(len = 256) :: fmt
       DATA iybeg,iyend /1900,2050/ ! The range of dates to be searched.
-      integer, parameter :: ba = 25
-      integer :: bads(ba,2)
-      integer :: times(ba,zs:ze)
+      integer size
+      integer,allocatable :: bads(:,:)     !year,month,count
+      integer,allocatable :: times(:,:)
+      character(len = 3),allocatable :: stimes(:,:) ! string times
+      character(len = 5),allocatable :: sftimes(:,:) ! string fractional times
+      real,allocatable :: fyears(:)
 C     USES flmoon,julday
+
+c     compile options
       rollback = .false.        ! rollback to original output
       check = .false.           ! print check statements (debug)
-      list = .false.            ! print list of dates
+      list = .false.            ! print dates as they are found
+      dofrac = .false.          ! print factional hours (minutes)
+
+c     allocate array size
+      size=(iyend-iybeg)*12
+      allocate(bads(size,3),times(size,zs:ze),stimes(size,zs:ze)
+     &     ,sftimes(size,zs:ze),fyears(size))
+
       if(rollback) then
          iybeg=1900
          iyend=2000
@@ -26,31 +38,39 @@ C     USES flmoon,julday
      *     iybeg,' to',iyend
       bads = 0
       times = 0
+      stimes = ' :'
+      sftimes = '  :'
       badmin = 0
       badmax = 0
       badtotal = 0
       whichbad = 0
+      allbad = .false.
       ntz=ze-zs+1
       do 10 timezone = zs, ze  
 c     The full moon of Friday, June 13, 2014 did not (tecncially) occur
 c     in the Easter Time Zone (the program default). This loop is added
 c     to include other time zones.
+      if(check) write(*,'(a,sp,i4,a)')'testing zone',timezone,'...'
       badcount = 0
       write (zn(timezone), '(sp,i3,a)') timezone, ' UTC' 
+c     zone names
+      zn( 0) = 'GMT'
+      if(rollback) zn(-5) = 'EST' ! Time zone −5 is Eastern Standard Time.
+c     standard time names
       szn=''
       szn(-8) = 'PST'
       szn(-7) = 'MST'
       szn(-6) = 'CST'
-      zn(-5) = 'EST'            ! Time zone −5 is Eastern Standard Time.
-      szn(-4) = 'AST'
-      zn( 0) = 'GMT'
+      szn(-5) = 'EST'  
+c      szn(-4) = 'AST'
 c      szn(+1) = 'CET'
+c     daylight saving time names
       dzn=''
       dzn(-7) = 'PDT'
       dzn(-6) = 'MDT'
       dzn(-5) = 'CDT'
       dzn(-4) = 'EDT'
-      dzn(-3) = 'ADT'
+c      dzn(-3) = 'ADT'
       TIMZON=timezone/24.    
       do 12 iyyy=iybeg,iyend ! Loop over each year,
          do 11 im=1,12       ! and each month.
@@ -66,49 +86,85 @@ c     adjustment.
                icon=0
  1             call flmoon(n,2,jd,frac) ! Get date of full moon n.
                ifrac=nint(24.*(frac+TIMZON)) ! Convert to hours in correct time zone.
+               ffrac=(24.*(frac+TIMZON)) ! Convert to hours in correct time zone.
                if(ifrac.lt.0)then ! Convert from Julian Days beginning at noon 
                   jd=jd-1       ! to civil days beginning at midnight.
                   ifrac=ifrac+24
+                  ffrac=ffrac+24
                endif
-               if(ifrac.gt.12)then
+               if((ifrac.gt.12).or.(ffrac.gt.12.0))then
                   jd=jd+1
                   ifrac=ifrac-12
+                  ffrac=ffrac-12
                else
                   ifrac=ifrac+12
+                  ffrac=ffrac+12
                endif
+c     The following check is required for timezones > +12
+               if((ifrac.gt.24).or.(ffrac.gt.24.0))then
+                  if(check)write(*,'(a,i4,a,i2,a,f4.1,a,f4.1)'
+     &                 )' found overflow: yr=',iyyy,' m=',im
+     &                 ,' d0=13 t0=',ffrac,'; d=14, t=',ffrac-24
+                  jd=jd+1
+                  ifrac=ifrac-24
+                  ffrac=ffrac-24
+              endif
+               hour=int(ffrac)
+               min=int((ffrac-hour)*60)
+               sec=((ffrac-hour)*60-min)*60
                if(jd.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?
-                     if(check)write(*,*)'found first bad day!'
+                     if(check)write(*,'(1x,a,i2,a,i2,a,i4)'
+     &                    )'found first bad day!',im,'/',13,'/',iyyy
                      badtotal = 1
                      whichbad = badtotal
                   else          ! not first
-                     if(check)write(*,*)'found a bad day. checking...'
+                     if(check)write(*,'(a,i0.2,a,i0.2,a)',advance='no'
+     &                    )' found a bad day at ',hour,':',min
+     &                    ,'. checking...'
                      newbad = .true.
                      do i=1,badtotal ! check
                       if((iyyy.eq.bads(i,1)).and.(im.eq.bads(i,2))) then
                            whichbad = i
-                           if(check)write(*,'(1x,i2,a,i2,a,i4,a)'
-     &                          )im,'/',13,'/',iyyy,' already found'
-
+                           if(check)write(*,'(1x,i2,a,i2,a,i4,a,i2)'
+     &                          )im,'/',13,'/',iyyy,' already found '
+     &                          ,bads(i,3)
                            newbad = .false.
                         endif
                      enddo
                      if(newbad)then ! new?
                         badtotal = badtotal +1
                         whichbad = badtotal
-                        if(badtotal.lt.ba)then
+                        if(badtotal.le.size)then
                            if(check) write(*,'(a,i2)')
-     &                          'found new bad day! count = ',badtotal
+     &                          ' found new bad day! count = ',badtotal
                         else
-                           write(*,*) 'too many bad days. 
-     &increase array size!'
+                           write(*,'(a,i3)') ' Too many bad days!
+     & Increase array size >',badtotal
                            return
                         endif
                      endif      ! end new?
                   endif         ! end first?                 
                   bads(whichbad,1)=iyyy
                   bads(whichbad,2)=im
+                  bads(whichbad,3)=bads(whichbad,3)+1
+                  if(bads(whichbad,3)+1.eq.24)allbad=.true.
                   times(whichbad,timezone)=ifrac
+                  write(sftimes(whichbad,timezone),'(i0.2,a,i0.2)')hour
+     &                 ,':',min
+                  if((ffrac.gt.1).and.(ffrac.lt.1.5)) then
+                     if(check) then 
+                        write(*,'(a,i4,a,i2,a,a5,a,a5)'
+     &                       )'  found margin: yr=',iyyy,' m=',im,' t0='
+     &                       ,sftimes(whichbad,timezone),'; t='
+     &                       ,sftimes(whichbad,timezone-1)
+                        write(*,'(a,i0.2,a,i0.2,a,sp,i3)')
+     &                       '  new time should be ',hour-1,':',min,
+     &                       ' in zone ',timezone-1
+                     endif
+                     write(sftimes(whichbad,timezone-1),
+     &                    '(i0.2,a,i0.2)')hour-1,':',min
+                  endif
                   if( (rollback.and.(timezone.eq.-5).or.
      &                 (.not.rollback).and.list.and.newbad) ) then
                   write (*,'(/1x,i2,a,i2,a,i4)') im,'/',13,'/',iyyy
@@ -119,9 +175,15 @@ c     adjustment.
                      write (fmt,*)'(1x,a,i2,a,a,a)'
                   endif
                   write (*,fmt) 'Full moon ',ifrac,
-     *                 ' hrs after midnight (',zn(timezone),').'
+     &                 ' hrs after midnight (',zn(timezone),')'
+                  if((.not.rollback).and.dofrac) then
+                     write (*,'(1x,a,f4.1,a,a,a,i2,a,i2,a,i0.2,f0.1)')
+     &                    'Full moon ',ffrac,' hrs after midnight ('
+     &                    ,zn(timezone),') at',hour,':',min,':',int(sec)
+     &                    ,sec-int(sec)
+                  endif
                endif
-                  badcount = badcount + 1
+               badcount = badcount + 1
                  
 c     Don't worry if you are unfamiliar with FORTRAN's esoteric input
 c     /output statements; very few programs in this book do any input
@@ -138,7 +200,7 @@ c     /output.
             endif
  11      continue
  12   continue
-      if(check) write (*,'(a,i2,a)') 'found ',badcount
+      if(check) write (*,'(a,i2,a)') ' found ',badcount
      &     ,' bad days in zone'
          if(badcount.gt.badmax)then
             badmax=badcount
@@ -147,6 +209,32 @@ c     /output.
             badmin=badcount
          endif
  10   continue
+      if(check) write(*,'(/a)') 'copying...'
+      write(fmt,'(a,i2,a)')'(1x,i2,1x,f6.1,i5,i3,',ntz,'(i3))'
+      do i=1,size
+         fyears(i)=bads(i,1)+bads(i,2)/12.
+         if((i.le.badtotal).and.check)  write(*,fmt) i,fyears(i),bads(i
+     &        ,1),bads(i,2),times(i,:)
+      enddo
+      call piksr4(size,fyears,3,bads,ntz,times,5,sftimes)
+      k=size-badtotal             ! calculate leading zeros in arrays
+      if(check) then
+         write(*,'(/a)') 'sorting...'
+         do i=1,size
+            l=i-k
+            if(i.gt.k)  write(*,fmt) l,fyears(i),bads(i,1)
+     &           ,bads(i,2),times(i,:)
+         enddo
+      endif
+
+      do i=1,size
+         do j=zs,ze 
+            if(times(i,j).ne.0) write(stimes(i,j),'(i2)')times(i,j)
+            if((times(i,j).eq.0).and.(sftimes(i,j).ne.'  :'))
+     &           write(stimes(i,j),'(i2)')0
+         enddo
+      enddo
+      
       if(.not.rollback) then
          write (*,'(/19x,a,i2,a,i5,a,i5)') 'Found ',badtotal
      &        ,' bad days from',iybeg,' to',iyend
@@ -154,19 +242,46 @@ c     /output.
      &        ,' bad days'
          write (*,'(1x,a,i2,a/)') 'The unluckiest zone had ',badmax
      &        ,' bad days'
-      write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,a3))'
-      write (*,fmt) (dzn(j),j=zs,ze)
-      write (*,fmt) (szn(j),j=zs,ze)
-      write (*,fmt) (zn(j),j=zs,ze)
-      write (fmt,'(a,i2,a)')'(11x,',ntz,'(1x,sp,i3))'
-      write (*,fmt) (j,j=zs,ze)
-      write (fmt,'(a,i2,a)')'(1x,i2,a,i2,a,i4,',ntz,'(1x,i3))'
-      write(*,*)'-----------------------------------------------------',
-     &'---------------------------------------------------',
-     &'--------------'
-      do, i=1,badtotal
-         write (*,fmt) bads(i,2),'/',13,'/'
-     $        ,bads(i,1), (times(i,j),j=zs,ze)
+         if(.not.dofrac) then   ! print hours only
+      write (fmt,'(a,i2,a)')'(a,',ntz,'(1x,a3))'
+      write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
+      write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
+      write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names
+      write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,sp,i3))'
+      write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a3))'
+      write(*,*) repeat('-',13+4*ntz)
+      do, i=1,size
+         l=i-k
+         if(i.gt.k) then
+            write (*,fmt,advance='no') l,bads(i,2),'/',13,'/'
+     $           ,bads(i,1),stimes(i,:)
+            if(bads(i,3).eq.24) write(*,'(a)',advance='no')' *'
+            write(*,*)
+         endif
       enddo
+      write(*,*)repeat("-",13+4*ntz)
+      write(*,'(2x,a)'
+     &     )'Note: times are rounded to the nearest hour.'
+      else                      ! print fractional hours
+      write (fmt,'(a,i2,a)')'(a,',ntz,'(3x,a3))'
+      write (*,fmt) 'Daylight time ',(dzn(j),j=zs,ze) ! print daylight names
+      write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
+      write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names      
+      write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz,'(1x,a5))'
+      write(*,*) repeat('-',13+6*ntz)
+      do, i=1,size
+         l=i-k
+         if(i.gt.k) then
+            write (*,fmt,advance='no') l,bads(i,2),'/',13,'/'
+     $           ,bads(i,1),sftimes(i,:)
+            if(bads(i,3).eq.24) write(*,'(a)',advance='no')' *'
+            write(*,*)
+         endif
+      enddo
+      write(*,*)repeat("-",13+6*ntz)
+      write(*,'(2x,a)'
+     &     )'Note: times do not include atmospheric refraction.'
+      endif
+      if(allbad) write(*,*) ' * World-wide bad luck'
       endif
       END   
