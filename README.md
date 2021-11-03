@@ -27,7 +27,7 @@
 | ------------------------ | ------------------------------------- | ----------- |
 | [`piksr3`](piksr3.f) | sort three arrays by straight insertion   | `tarray.dat`|
 | [`piksr3_122`](piksr3_122.f) | sort an array and two matricies by straight insertion | `tarray.dat`|
-| [`piksr4_1222`](piksr4_1222) |||
+| [`piksr4_1222`](piksr4_1222) | | `tarray.dat` |
 
 ## Installation
 ### Cloning
