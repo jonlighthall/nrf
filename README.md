@@ -16,7 +16,7 @@
 | ---- | ------------------------ | ------------------------------------- | -----------------------------| ----------- |
 |  --- | [`flmoon`](flmoon.dem.f) | calculate phases of the moon by date  | `flmoon`, `julday`, `caldat` |             |
 |  --- | [`julday`](julday.dem.f) | Julian Day number from calendar date  | `julday`                     | `dates.dat` |
-|  1.1 | [`badluk`](badluk.f)     | Friday the 13th when the moon is full | `flmoon`, `julday`           |             |
+|  1.1 | [`badluk`](badluk.f)     | Friday the 13th when the moon is full | `flmoon`, `julday`, `piksr4_1222`           |             |
 |  --- | [`caldat`](caldat.dem.f) | calendar date from Julian day number  | `julday`, `caldat`           | `dates.dat` |
 |  --- | [`piksrt`](piksrt.dem.f) | sort an array by straight insertion   | `piksrt`                     | `tarray.dat`|
 |  --- | [`piksr2`](piksr2.dem.f) | sort two arrays by straight insertion | `piksr2`                     | `tarray.dat`|
@@ -27,6 +27,7 @@
 | ------------------------ | ------------------------------------- | ----------- |
 | [`piksr3`](piksr3.f) | sort three arrays by straight insertion   | `tarray.dat`|
 | [`piksr3_122`](piksr3_122.f) | sort an array and two matricies by straight insertion | `tarray.dat`|
+| [`piksr4_1222`](piksr4_1222) |||
 
 ## Installation
 ### Cloning
@@ -40,7 +41,7 @@ The demonstration programs can be compiled using the [`makefile`](makefile). Alt
 ````bash
 gfortran -std=legacy flmoon.dem.f flmoon.f julday.f caldat.f
 gfortran -std=legacy julday.dem.f julday.f
-gfortran -std=legacy badluk.f  flmoon.f julday.f piksr3_122.f
+gfortran -std=legacy badluk.f  flmoon.f julday.f piksr4_1222.f
 gfortran -std=legacy caldat.dem.f julday.f caldat.f
 
 ````
