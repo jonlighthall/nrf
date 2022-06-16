@@ -1,6 +1,6 @@
       SUBROUTINE piksr4(n,arr,bn,brr,cn,crr,dn,drr)
-      INTEGER n,bn,cn,dn
-      REAL arr(n),brr(n,bn),crr(n,cn)
+      INTEGER n,bn,cn,dn,brr(n,bn),crr(n,cn)
+      REAL arr(n)
       character(len = dn) drr(n,cn)
 c     Sorts a 1D array arr(1:n) into ascending numerical order, by
 c     straight insertion, while making the corresponding rearrangement
