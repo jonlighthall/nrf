@@ -16,17 +16,18 @@ C	Driver for routine PIKSRT
 	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
 	READ(UNIT,*) (A(I),I=1,X)
 	CLOSE(UNIT)
+c	Format printing
+	write(FMT,'("(1x,",i0,"f7.2)")') DIV
 C	Print original array
-	WRITE(*,*) 'Original array:'
-	WRITE(FMT,'(A)')'(1X,10F6.2)'
+	WRITE(*,*) 'Before sorting, array is:'
 	DO 11 I=1,X/DIV
-	   WRITE(*,FMT) (A(DIV*(I-1)+J),J=1,DIV)
+	   WRITE(*,FMT) (A(DIV*(I-1)+J), J=1,DIV)
  11	CONTINUE
 C	Sort array
 	CALL PIKSRT(X,A)
 C	Print sorted array
-	WRITE(*,*) 'Sorted array:'
+	WRITE(*,*) 'After sorting, array is:'
 	DO 12 I=1,X/DIV
-	   WRITE(*,FMT) (A(DIV*(I-1)+J),J=1,DIV)
+	   WRITE(*,FMT) (A(DIV*(I-1)+J), J=1,DIV)
  12	CONTINUE
 	END
