@@ -1,5 +1,8 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR3_122
+	implicit none
+	real A,B,C
+	integer I,j
 	INTEGER, PARAMETER :: X=6, Y=2, DIV=2
 	DIMENSION A(X),B(X,Y),C(X,Y)
 	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard

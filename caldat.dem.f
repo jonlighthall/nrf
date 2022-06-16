@@ -1,5 +1,7 @@
 	PROGRAM D1R4
 C	Driver for routine CALDAT
+	implicit none
+	integer N,I,IM,ID,IY,IYCOPY,J,IMM,IDD,IYY,JULDAY
 	CHARACTER NAME(12)*10
 C	Check whether CALDAT properly undoes the operation of JULDAY
 	DATA NAME/'January','February','March','April','May',

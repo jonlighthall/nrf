@@ -1,7 +1,8 @@
       PROGRAM badluk
+      implicit none
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
      *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
-     &     , ntz, hour, min
+     &     , ntz, hour, min, i, j, k, l
       LOGICAL newbad, rollback, check, list, dofrac, allbad
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac,ffrac,sec

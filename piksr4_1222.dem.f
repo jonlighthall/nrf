@@ -1,5 +1,15 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR4_1222
+	implicit none
+	interface
+	   SUBROUTINE piksr4(n,arr,bn,brr,cn,crr,dn,drr)
+	   INTEGER, intent(in) :: n,bn,cn,dn
+	   REAL, intent(in) ::	arr(n),brr(n,bn),crr(n,cn)
+	   character(len = dn), intent(in) ::  drr(n,cn)
+	   end subroutine
+	end interface
+	real A,B,C
+	integer I,J
 	INTEGER, PARAMETER :: X=6, Y=2, DIV=2
 	DIMENSION A(X),B(X,Y),C(X,Y)
 	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
@@ -11,9 +21,9 @@ C	Driver for routine PIKSR4_1222
 C	Generate B and C arrays
 	DO 11 I=1,X
 	   DO J=1,Y
-	   B(I,J)=I-1+J-1
-	   C(I,J)=(A(I)+B(I,J))/2.+J-1
-	   WRITE(D(I,J),'(F3.0)')C(I,J)
+	      B(I,J)=real(I)-1+real(J)-1
+	      C(I,J)=(A(I)+B(I,J))/2.+real(J)-1
+	      WRITE(D(I,J),'(F3.0)')C(I,J)
 	   ENDDO
  11	CONTINUE
 C	Print original arrays

@@ -1,7 +1,10 @@
 	PROGRAM D8R1
 C	Driver for routine PIKSRT
+	implicit none
+	real A
 	DIMENSION A(100)
 	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
+	integer I,J
 	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
 	READ(UNIT,*) (A(I),I=1,100)
 	CLOSE(UNIT)

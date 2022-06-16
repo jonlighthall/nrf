@@ -1,5 +1,8 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR2
+	implicit none
+	real A, B
+	integer I,J
 	DIMENSION A(100),B(100)
 	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
 	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')

@@ -1,17 +1,18 @@
 	PROGRAM D1R1
 C	Driver for routine FLMOON
-	PARAMETER(TZONE=-6.0)
+	real, PARAMETER :: TZONE=-6.0
 	CHARACTER PHASE(4)*15,TIMSTR(2)*3
-	DATA PHASE/'new moon','first quarter',
-     *			'full moon','last quarter'/
+	DATA PHASE/'new moon','first quarter','full moon','last quarter'
+	1    /
 	DATA TIMSTR/' AM',' PM'/
-	INTEGER HOUR,MIN
+	INTEGER HOUR,MIN,I,IM,ID,IY,IFRAC,ISTR,NPH,JULDAY,J1,J2
+	real FRAC,ffrac,N,TIMZON
 	WRITE(*,*) 'Date of the next few phases of the moon'
 	WRITE(*,*) 'Enter today''s date (e.g. 1,31,1982)'
 	TIMZON=TZONE/24.0
 	READ(*,*) IM,ID,IY
 C	Approximate number of full moons since January 1900
-	N=12.37*(IY-1900+(IM-0.5)/12.0)
+	N=12.37*(IY-1900+(real(IM)-0.5)/12.0)
 	NPH=2
 	J1=JULDAY(IM,ID,IY)
 	CALL FLMOON(N,NPH,J2,FRAC)

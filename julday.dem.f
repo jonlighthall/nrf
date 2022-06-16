@@ -1,6 +1,13 @@
 	PROGRAM D1R2
 C	Driver for JULDAY
+	implicit none
+	interface
+	   integer function JULDAY(IM,ID,IY)
+	   integer, intent(in) :: IM,ID,IY
+	   end function
+	end interface
 	CHARACTER TXT*40,NAME(12)*15
+	integer I,IM,ID,IY,N
 	DATA NAME/'January','February','March','April','May','June',
      *		'July','August','September','October','November',
      *		'December'/
