@@ -1,7 +1,15 @@
 	PROGRAM D1R4
 C	Driver for routine CALDAT
 	implicit none
-	integer N,I,IM,ID,IY,IYCOPY,J,IMM,IDD,IYY,JULDAY
+	interface
+	   SUBROUTINE caldat(julian,mm,id,iyyy)
+	   INTEGER, intent(in) :: julian,mm,id,iyyy
+	   end subroutine
+	integer function JULDAY(IM,ID,IY)
+	integer, intent(in) :: IM,ID,IY
+	end function
+	end interface
+	integer N,I,IM,ID,IY,IYCOPY,J,IMM,IDD,IYY
 	CHARACTER NAME(12)*10
 C	Check whether CALDAT properly undoes the operation of JULDAY
 	DATA NAME/'January','February','March','April','May',

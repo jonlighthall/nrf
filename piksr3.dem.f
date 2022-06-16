@@ -1,6 +1,12 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR3
 	implicit none
+	interface
+	   SUBROUTINE piksr3(n,arr,brr,crr)
+	   INTEGER, intent(in) :: n
+	   REAL, intent(in) ::	arr(n),brr(n),crr(n)
+	   end subroutine
+	end interface
 	real A, B, C
 	integer I,J
 	DIMENSION A(100),B(100),C(100)
@@ -11,7 +17,7 @@ C	Driver for routine PIKSR3
 	CLOSE(UNIT)
 C	Generate B and C arrays
 	DO 11 I=1,100
-	   B(I)=I
+	   B(I)=real(I)
 	   C(I)=(A(I)+B(I))/2.
  11	CONTINUE
 C	Sort A and mix B,C

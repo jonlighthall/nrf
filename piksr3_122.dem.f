@@ -1,6 +1,12 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR3_122
 	implicit none
+	interface
+	   SUBROUTINE piksr3(n,arr,bn,brr,cn,crr)
+	   INTEGER, intent(in) :: n,bn,cn
+	   REAL, intent(in) ::	arr(n),brr(n,bn),crr(n,cn)
+	   end subroutine
+	end interface
 	real A,B,C
 	integer I,j
 	INTEGER, PARAMETER :: X=6, Y=2, DIV=2
@@ -13,8 +19,8 @@ C	Driver for routine PIKSR3_122
 C	Generate B and C arrays
 	DO 11 I=1,X
 	   do j=1,Y
-	   B(I,j)=I-1+j-1
-	   C(I,j)=(A(I)+B(I,j))/2.+j-1
+	      B(I,j)=real(I)-1+real(j)-1
+	      C(I,j)=(A(I)+B(I,j))/2.+real(j)-1
 	   enddo
  11	CONTINUE
 C	Print original arrays

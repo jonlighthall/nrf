@@ -1,13 +1,15 @@
       SUBROUTINE flmoon(n,nph,jd,frac)
-      INTEGER jd,n,nph
-      REAL frac,RAD
-      PARAMETER (RAD=3.14159265/180.)
+      implicit none
+      INTEGER n,nph,jd
+      REAL frac
 c     This routine calculates the phases of the moon. Given an integer n
 c     and a code nph for the phase desired (nph = 0 for new moon, 1 for
 c     first quarter, 2 for full, 3 for last quarter), the routine
 c     returns the Julian Day Number jd, and the fractional part of a day
 c     frac to be added to it, of the nth such phase since January, 1900.
-c     Greenwich Mean Time is assumed. 
+c     Greenwich Mean Time is assumed.
+
+      real, PARAMETER :: RAD=3.14159265/180.
       INTEGER i
       REAL am,as,c,t,t2,xtra
       c=n+nph/4.                ! This is how we comment an individual line.

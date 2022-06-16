@@ -1,9 +1,23 @@
       PROGRAM badluk
       implicit none
-      INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,
-     *     julday,timezone, badcount, badmin, badmax, badtotal, whichbad
-     &     , ntz, hour, min, i, j, k, l
-      LOGICAL newbad, rollback, check, list, dofrac, allbad
+      interface
+         SUBROUTINE piksr4(n,arr,bn,brr,cn,crr,dn,drr)
+         INTEGER, intent(in) :: n,bn,cn,dn,brr(n,bn),crr(n,cn)
+         REAL, intent(in) :: arr(n)
+         character(len = dn), intent(in) :: drr(n,cn)
+         end subroutine
+      integer function JULDAY(IM,ID,IY)
+      integer, intent(in) :: IM,ID,IY
+      end function
+      SUBROUTINE flmoon(n,nph,jd,frac)
+      INTEGER n,nph,jd
+      REAL frac
+      end subroutine
+      end interface
+      INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,timezone
+     &     ,badcount,badmin,badmax,badtotal,whichbad,ntz,hour,min,i,j,k
+     &     ,l
+      LOGICAL newbad,rollback,check,list,dofrac,allbad
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       REAL TIMZON,frac,ffrac,sec
       character(len = 7) :: zn(zs:ze) ! Time zone name 
