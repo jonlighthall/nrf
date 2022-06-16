@@ -8,7 +8,7 @@ C	Driver for routine PIKSR3_122
 	   end subroutine
 	end interface
 	real A,B,C
-	integer I,j
+	integer I,J
 	INTEGER, PARAMETER :: X=6, Y=2, DIV=2
 	DIMENSION A(X),B(X,Y),C(X,Y)
 	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
@@ -18,9 +18,9 @@ C	Driver for routine PIKSR3_122
 	CLOSE(UNIT)
 C	Generate B and C arrays
 	DO 11 I=1,X
-	   do j=1,Y
-	      B(I,j)=real(I)-1+real(j)-1
-	      C(I,j)=(A(I)+B(I,j))/2.+real(j)-1
+	   do J=1,Y
+	      B(I,J)=real(I)-1+real(J)-1
+	      C(I,J)=(A(I)+B(I,J))/2.+real(J)-1
 	   enddo
  11	CONTINUE
 C	Print original arrays
