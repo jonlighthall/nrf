@@ -1,43 +1,58 @@
 # fortran compiler
 your_f77 = gfortran
+# general flags
+compile_flags = -c $<
+output_flags = -o $@
 # fortran compile flags
 warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
 -Wcharacter-truncation -Wconversion-extra -Wimplicit-interface	\
 -Wimplicit-procedure -Winteger-division -Wintrinsics-std	\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs
-debug = -g							\
--ffpe-trap=invalid,zero,overflow,underflow,inexact,denormal	\
--fcheck=all -fbacktrace
-output = -o $@
-fcflags = -fimplicit-none -fd-lines-as-comments $(warnings) $(debug) $(output)
+warnings = -w
+fcflags = -fimplicit-none -fd-lines-as-comments $(warnings) $(compile_flags) $(output_flags)
 # fortran link flags
-flflags = -c $(fcflags)
+flflags = $^ $(output_flags)
+OBJDIR=obj
+OBJS=$(addprefix $(OBJDIR)/,julday.o flmoon.o caldat.o)
+BINDIR=bin
+# executable name
+TARGET = badluk.exe
 
-all: flmoon.exe julday.exe badluk.exe caldat.exe piksrt.exe piksr2.exe \
-	 piksr3.exe piksr3_122.exe piksr4_1222.exe
+all: $(addprefix $(BINDIR)/,$(TARGET) flmoon.exe julday.exe caldat.exe piksrt.exe piksr2.exe piksr3.exe piksr3_122.exe piksr4_1222.exe)
 
-flmoon.exe: flmoon.dem.o flmoon.o julday.o caldat.o
-	$(your_f77) $(fcflags) $^
+$(BINDIR)/$(TARGET): $(OBJS) $(addprefix $(OBJDIR)/,badluk.o piksr4_1222.o) | $(BINDIR)
+	$(your_f77) $(flflags) 
 
-badluk.exe: badluk.o flmoon.o julday.o piksr4_1222.o
-	$(your_f77) $(fcflags) $^
+# object directory
+$(OBJDIR):
+	mkdir -pv $(OBJDIR)
 
-caldat.exe: caldat.dem.o julday.o caldat.o
-	$(your_f77) $(fcflags) $^
+# object directory
+$(BINDIR):
+	mkdir -pv $(BINDIR)
 
-%.exe: %.dem.o %.o
-	$(your_f77) $(fcflags) $^
+$(BINDIR)/%.exe: $(addprefix $(OBJDIR)/,%.dem.o %.o) $(OBJS) | $(BINDIR)
+	$(your_f77) $(flflags) 
 
-%.o: %.f	
-	 $(your_f77) $(flflags) $<
+$(OBJDIR)/%.o: %.f | $(OBJDIR)
+	 $(your_f77) $(fcflags) 
 
-clean:
-	rm -fv *.o
-	rm -fv *.exe
-	rm -fv fort.*
 CMD = @rm -vfrd
+clean:
+# remove compiled binaries
+	$(CMD) $(TARGET)
+	$(CMD) $(OBJDIR)/*.o
+	$(CMD) $(OBJDIR)
+	$(CMD) *.o *.obj
+	$(CMD) $(BINDIR)/*.exe
+	$(CMD) $(BINDIR)
+	$(CMD) *.exe
+	$(CMD) *.out
+	$(CMD) fort.*
 distclean: clean
 # remove Git versions
 	$(CMD) *.~*~
-test:
-	./badluck.exe
+test: distclean $(addprefix $(BINDIR)/,$(TARGET) caldat.exe piksrt.exe)
+	./$(BINDIR)/$(TARGET)
+	./$(BINDIR)/caldat.exe
+	./$(BINDIR)/piksrt.exe
