@@ -1,28 +1,16 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR3
+	use piksrt_dim
 	implicit none
-	interface
-	   SUBROUTINE piksr3(n,arr,brr,crr)
-	   INTEGER, intent(in) :: n
-	   REAL, intent(in) :: arr(n),brr(n),crr(n)
-	   end subroutine
-	end interface
-	real A
-	integer I,J,B,C
-	INTEGER, PARAMETER :: X=100, DIV=10
-	DIMENSION A(X),B(X),C(X)
-	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
-	CHARACTER(LEN = 256) :: FMT,iFMT
-	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
-	READ(UNIT,*) (A(I),I=1,X)
-	CLOSE(UNIT)
+	integer B,C
+	DIMENSION B(X),C(X)
+	CHARACTER(LEN = 256) :: iFMT
+	call read_file
 C	Generate B and C arrays
 	DO 11 I=1,X
 	   B(I)=I
 	   C(I)=(A(I)+B(I))/2
  11	CONTINUE
-c	Format printing
-	write(FMT,'("(1x,",i0,"f7.2)")') DIV
 	write(iFMT,'("(1x,",i0,"i3)")') DIV
 C	Sort A and mix B,C
 	CALL PIKSR3(X,A,real(B),real(C))

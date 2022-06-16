@@ -31,7 +31,7 @@ $(OBJDIR):
 $(BINDIR):
 	mkdir -pv $(BINDIR)
 
-$(BINDIR)/%.exe: $(addprefix $(OBJDIR)/,%.dem.o %.o) $(OBJS) | $(BINDIR)
+$(BINDIR)/%.exe: $(addprefix $(OBJDIR)/,%.dem.o %.o piksrt_dim.o) $(OBJS) | $(BINDIR)
 	$(your_f77) $(flflags) 
 
 $(OBJDIR)/%.o: %.f | $(OBJDIR)
@@ -44,6 +44,7 @@ clean:
 	$(CMD) $(OBJDIR)/*.o
 	$(CMD) $(OBJDIR)
 	$(CMD) *.o *.obj
+	$(CMD) *.mod
 	$(CMD) $(BINDIR)/*.exe
 	$(CMD) $(BINDIR)
 	$(CMD) *.exe
