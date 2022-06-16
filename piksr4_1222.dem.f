@@ -10,26 +10,27 @@ C	Driver for routine PIKSR4_1222
 	end interface
 	real A
 	integer I,J,B,C
-	INTEGER, PARAMETER :: X=6, Y=2, DIV=2
+	INTEGER, PARAMETER :: X=6, Y=2, DIV=2, str_len=3
 	DIMENSION A(X),B(X,Y),C(X,Y)
 	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
 	CHARACTER(LEN = 256) :: FMT,iFMT,sFMT
-	CHARACTER(LEN = 3) :: D(X,Y)
+	CHARACTER(LEN = str_len) :: D(X,Y)
 	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
 	READ(UNIT,*) (A(I),I=1,X)
 	CLOSE(UNIT)
 C	Generate B and C arrays
+	write(iFMT,'("(i",i0,")")') str_len
 	DO 11 I=1,X
 	   DO J=1,Y
 	      B(I,J)=I-1+J-1
 	      C(I,J)=(A(I)+B(I,J))/2+J-1
-	      WRITE(D(I,J),'(I3)')C(I,J)
+	      WRITE(D(I,J),iFMT)C(I,J)
 	   ENDDO
  11	CONTINUE
 c	Format printing
 	write(FMT,'("(1x,",i0,"f7.2)")') DIV
-	write(iFMT,'("(1x,",i0,"i3)")') DIV
-	write(sFMT,'("(1x,",i0,"A3)")') DIV
+	write(iFMT,'("(1x,",i0,"i",i0,")")') DIV, str_len
+	write(sFMT,'("(1x,",i0,"A",i0,")")') DIV, str_len
 C	Print original arrays
 	WRITE(*,*) 'Before sorting, array A is:'
 	DO 12 I=1,X/DIV
@@ -50,7 +51,7 @@ C	Print original arrays
 	WRITE(*,*) 'press RETURN to continue...'
 	READ(*,*)
 C	Sort B and mix A,C
-	CALL PIKSR4(X,A,Y,B,Y,C,3,D)
+	CALL PIKSR4(X,A,Y,B,Y,C,str_len,D)
 	WRITE(*,*) 'After sorting A and mixing B and C, array A is:'
 	DO 14 I=1,X/DIV
 	   WRITE(*,FMT) (A(DIV*(I-1)+J), J=1,DIV)
