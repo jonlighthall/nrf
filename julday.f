@@ -7,7 +7,12 @@ c     year iyyy, all integer variables. Positive year signifies A.D.;
 c     negative, B.C. Remember that the year after 1 B.C. was 1 A.D. 
       INTEGER ja,jm,jy
       jy=iyyy
-      if (jy.eq.0) pause 'julday: there is no year zero'
+      if (jy.eq.0) then
+         write(*,*) 'julday: there is no year zero'
+         write(*,*) 'enter a new year (hit Enter to conintue)'
+         READ(*,'(i5)') iyyy
+         jy=iyyy
+      endif
       if (jy.lt.0) jy=jy+1
       if (mm.gt.2) then         ! Here is an example of a block IF-structure.
          jm=mm+1
