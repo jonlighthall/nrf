@@ -12,7 +12,7 @@ warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
 -Wimplicit-procedure -Winteger-division -Wintrinsics-std	\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs
 #warnings = -w
-fcflags = -fimplicit-none -fd-lines-as-comments $(warnings) $(compile_flags) $(output_flags) $(mod_flags)
+fcflags = $(f90cflags) -fd-lines-as-comments
 f90cflags = -fimplicit-none $(warnings) $(compile_flags) $(output_flags) $(mod_flags)
 #
 # fortran link flags
