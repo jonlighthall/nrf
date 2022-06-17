@@ -1,7 +1,6 @@
       module piksrt_dim
       implicit none
-      INTEGER, PARAMETER :: X=100, DIV=10
-
+c     define interfaces
       interface
          SUBROUTINE piksrt(n,arr)
          INTEGER, intent(in) :: n
@@ -17,29 +16,28 @@
       INTEGER, intent(in) :: n
       REAL, intent(in) :: arr(n),brr(n),crr(n)
       end subroutine
-
       end interface
+c     define array dimensions
+      INTEGER, PARAMETER :: X=100, DIV=10
       real A
-      integer I,J
       DIMENSION A(X)
+c     define common varialbes
+      integer I,J
       INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
       CHARACTER(LEN = 256) :: FMT
 
       contains
       subroutine set_fmt()
-
 c     Format printing
       write(FMT,'("(1x,",i0,"f7.2)")') DIV
       end subroutine
 
       subroutine read_file()
-	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
-	READ(UNIT,*) (A(I),I=1,X)
-	CLOSE(UNIT)
-	call set_fmt()
-
-      
+c     read data files
+      OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
+      READ(UNIT,*) (A(I),I=1,X)
+      CLOSE(UNIT)
+      call set_fmt()
       end subroutine
-
 
       end module piksrt_dim
