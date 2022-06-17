@@ -4,6 +4,7 @@ your_f77 = gfortran
 # general flags
 compile_flags = -c $<
 output_flags = -o $@
+mod_flags = -J $(MODDIR)
 #
 # fortran compile flags
 warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
@@ -11,7 +12,8 @@ warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
 -Wimplicit-procedure -Winteger-division -Wintrinsics-std	\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs
 #warnings = -w
-fcflags = -fimplicit-none -fd-lines-as-comments $(warnings) $(compile_flags) $(output_flags)
+fcflags = -fimplicit-none -fd-lines-as-comments $(warnings) $(compile_flags) $(output_flags) $(mod_flags)
+f90cflags = -fimplicit-none $(warnings) $(compile_flags) $(output_flags) $(mod_flags)
 #
 # fortran link flags
 flflags = $^ $(output_flags)
@@ -44,11 +46,11 @@ $(BINDIR)/%.exe: $(addprefix $(OBJDIR)/,%.dem.o %.o piksrt_dim.o) $(DEPS) | $(BI
 	$(your_f77) $(flflags) 
 
 $(OBJDIR)/%.o: %.f | $(OBJDIR) $(MODDIR)
-	 $(your_f77) $(fcflags) -J $(MODDIR)
+	 $(your_f77) $(fcflags)
 
 
 $(OBJDIR)/%.o: %.f90 | $(OBJDIR) $(MODDIR)
-	 $(your_f77) $(fcflags) -J $(MODDIR)
+	 $(your_f77) $(f90cflags)
 
 CMD = @rm -vfrd
 clean:
