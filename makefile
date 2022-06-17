@@ -30,7 +30,7 @@ TARGET = badluk.exe
 all: $(addprefix $(BINDIR)/,$(TARGET) flmoon.exe julday.exe caldat.exe piksrt.exe piksr2.exe piksr3.exe piksr3_122.exe piksr4_1222.exe)
 
 $(BINDIR)/$(TARGET): $(DEPS) $(addprefix $(OBJDIR)/,badluk.o piksr4_1222.o) | $(BINDIR)
-	$(your_f77) $(flflags) 
+	$(your_f77) $(flflags) #-free-form
 #
 # defin directory creation
 $(OBJDIR):
@@ -44,6 +44,10 @@ $(BINDIR)/%.exe: $(addprefix $(OBJDIR)/,%.dem.o %.o piksrt_dim.o) $(DEPS) | $(BI
 	$(your_f77) $(flflags) 
 
 $(OBJDIR)/%.o: %.f | $(OBJDIR) $(MODDIR)
+	 $(your_f77) $(fcflags) -J $(MODDIR)
+
+
+$(OBJDIR)/%.o: %.f90 | $(OBJDIR) $(MODDIR)
 	 $(your_f77) $(fcflags) -J $(MODDIR)
 
 CMD = @rm -vfrd

@@ -26,6 +26,7 @@ c     define interfaces
       real FFRAC,SEC
       real TIMZON
       integer IFRAC
+      logical debug_messages
 
       contains
       integer function n_full_moons(int_year,int_month)
@@ -63,30 +64,53 @@ c     adjustment.
       integer JD,IFRAC
       real FRAC,FFRAC
       real, intent(in) :: TIMZON
-      IFRAC=NINT(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
-      FFRAC=(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
-      IF (IFRAC.LT.0) THEN      ! Convert from Julian Days beginning at noon 
-         JD=JD-1                ! to civil days beginning at midnight.
+c     First, convert times to the local time zone
+      IFRAC=NINT(24.*(FRAC+TIMZON))
+      FFRAC=(24.*(FRAC+TIMZON))
+c     Then, convert from Julian Days beginning at noon to civil days
+c     beginning at midnight
+      IF (IFRAC.LT.0) THEN
+         JD=JD-1
          IFRAC=IFRAC+24
          FFRAC=FFRAC+24
       ENDIF
-      IF((IFRAC.GT.12).OR.(FFRAC.GT.12.0)) THEN ! flmoon.dem uses IFRAC.GE.12
+c     If the time is after noon, increment the Julian Day and reset the
+c     time
+      IF((IFRAC.GE.12).AND.(FFRAC.GE.12.0)) THEN ! flmoon.dem uses IFRAC.GE.12
+         if(IFRAC.EQ.12) write(*,'(a,i3,a,i4,a,i2,a,i7,a,f4.1,a,f4.1,a
+     &        ,f5.1)')' found overflow: N=',N,' yr=',iyyy,' m=',im,' d0
+     &        =',JD,' t0=',FFRAC,'; t=',FFRAC-12,' TZ=',TIMZON*24
+
          JD=JD+1
          IFRAC=IFRAC-12
          FFRAC=FFRAC-12
+c     Otherwise, just set the time
       ELSE
          IFRAC=IFRAC+12
          FFRAC=FFRAC+12
       ENDIF
+c     Valid timezones range from -12 to +14 hours
 c     The following check is required for timezones > +12
       if((IFRAC.gt.24).or.(FFRAC.gt.24.0))then
-         write(*,'(a,i4,a,i2,a,f4.1,a,f4.1)'
-     &        )' found overflow: yr=',iyyy,' m=',im
-     &        ,' d0=13 t0=',FFRAC,'; d=14, t=',FFRAC-24
+         if(debug_messages) write(*
+     &        ,'(a,i4,a,i2,a,i7,a,f4.1,a,i7,a,f4.1,a,f5.1)'
+     &        )' found overflow: yr=',iyyy,' m=',im,' d0=',JD,' t0='
+     &        ,FFRAC,'; d=',JD+1,', t=',FFRAC-24,' TZ=',TIMZON*24
          JD=JD+1
          IFRAC=IFRAC-24
          FFRAC=FFRAC-24
       endif
+      end subroutine
+
+      subroutine print_stats(place,year,month,target_day,test_day,n_moon
+     &     ,ic,icon)
+      character(len=*),intent(in) :: place
+      integer,intent(in) :: year,month,target_day,test_day,n_moon,ic
+     &     ,icon
+      if(debug_messages) write(*,'(2a,i4,a,i2,2(a,i7),3(a,i3))') place
+     &     ,' year=',year,' mon=',month,' jday=',target_day,' JD='
+     &     ,test_day,' N=',N,' ic=',ic,' icon=',icon
+
       end subroutine
 
       end module
