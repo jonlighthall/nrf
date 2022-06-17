@@ -48,12 +48,36 @@ c     adjustment.
       real,optional,intent(out) :: second
       hour=int(floating_fractional_hour)
       minute=int((floating_fractional_hour-real(hour))*60)
-      second=((floating_fractional_hour-real(hour))*60-real(minute))*60
+      if(present(second))then
+         second=((floating_fractional_hour-real(hour))*60-real(minute))
+     &        *60
+      endif
       end subroutine
 
       real function frac_time_zone(gmt_offset_hours)
       real,intent(in) :: gmt_offset_hours
       frac_time_zone=gmt_offset_hours/24.
-      end function      
+      end function
+
+      subroutine convert_time(IFRAC,FFRAC,FRAC,TIMZON,JD)
+      integer JD,IFRAC
+      real FRAC,FFRAC
+      real, intent(in) :: TIMZON
+      IFRAC=NINT(24.*(FRAC+TIMZON))
+      FFRAC=(24.*(FRAC+TIMZON))
+      IF (IFRAC.LT.0) THEN
+         JD=JD-1
+         IFRAC=IFRAC+24
+         FFRAC=FFRAC+24
+      ENDIF
+      IF (IFRAC.GE.12) THEN
+         JD=JD+1
+         IFRAC=IFRAC-12
+         FFRAC=FFRAC-12
+      ELSE
+         IFRAC=IFRAC+12
+         FFRAC=FFRAC+12
+      ENDIF
+      end subroutine
 
       end module

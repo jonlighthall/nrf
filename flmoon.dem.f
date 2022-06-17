@@ -12,6 +12,7 @@ C	Driver for routine FLMOON
 	WRITE(*,*) 'Enter today''s date (e.g. 1,31,1982)'
 	TIMZON=frac_time_zone(TZONE)
 	READ(*,*) IM,ID,IYYY
+C	Approximate number of full moons since January 1900
 	N=n_full_moons(IYYY,IM)
 	NPH=2
 	J1=JULDAY(IM,ID,IYYY)
@@ -47,8 +48,8 @@ c       convert time string to AM/PM
 	   ENDIF
 	   CALL CALDAT(JD,IM,ID,IYYY)
 	   WRITE(*,'(2X,I5,3X,2I3,I5,T26,i0.2,a,i0.2,1x,a,I2,2A,4X,A)')
-	1	N-284,IM,ID,IYYY,hour,':',min,'-> ',IFRAC,TIMSTR(ISTR),''
-	1	,PHASE(NPH+1)
+	1	N-284,IM,ID,IYYY,hour,':',min,'-> ',IFRAC,TIMSTR(ISTR)
+	1	,'',PHASE(NPH+1)
 	   IF (NPH.EQ.3) THEN
 	      NPH=0
 	      N=N+1
