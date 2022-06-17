@@ -1,4 +1,5 @@
 	PROGRAM D8R2
+	use piksrt_dim, only : FMT,read_file,I,J
 C	Driver for routine PIKSR4_1222
 	implicit none
 	interface
@@ -9,15 +10,12 @@ C	Driver for routine PIKSR4_1222
 	   end subroutine
 	end interface
 	real A
-	integer I,J,B,C
+	integer B,C
 	INTEGER, PARAMETER :: X=6, Y=2, DIV=2, str_len=3
 	DIMENSION A(X),B(X,Y),C(X,Y)
-	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
-	CHARACTER(LEN = 256) :: FMT,iFMT,sFMT
+	CHARACTER(LEN = 256) :: iFMT,sFMT
 	CHARACTER(LEN = str_len) :: D(X,Y)
-	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
-	READ(UNIT,*) (A(I),I=1,X)
-	CLOSE(UNIT)
+	call read_file
 C	Generate B and C arrays
 	write(iFMT,'("(i",i0,")")') str_len
 	DO 11 I=1,X

@@ -24,12 +24,13 @@ c     define array dimensions
 c     define common varialbes
       integer I,J
       INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
-      CHARACTER(LEN = 256) :: FMT
+      CHARACTER(LEN = 256) :: FMT,iFMT
 
       contains
       subroutine set_fmt()
 c     Format printing
       write(FMT,'("(1x,",i0,"f7.2)")') DIV
+      write(iFMT,'("(1x,",i0,"i3)")') DIV
       end subroutine
 
       subroutine read_file()

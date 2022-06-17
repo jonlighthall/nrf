@@ -1,4 +1,5 @@
 	PROGRAM D8R2
+	use piksrt_dim, only : FMT,iFMT,read_file,I,J
 C	Driver for routine PIKSR3_122
 	implicit none
 	interface
@@ -8,14 +9,10 @@ C	Driver for routine PIKSR3_122
 	   end subroutine
 	end interface
 	real A
-	integer I,J,B,C
+	integer B,C
 	INTEGER, PARAMETER :: X=6, Y=2, DIV=2
 	DIMENSION A(X),B(X,Y),C(X,Y)
-	INTEGER, PARAMETER :: UNIT=1 ! unit 5 reserved for keyboard
-	CHARACTER(LEN = 256) :: FMT,iFMT
-	OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
-	READ(UNIT,*) (A(I),I=1,X)
-	CLOSE(UNIT)
+	call read_file
 C	Generate B and C arrays
 	DO 11 I=1,X
 	   DO J=1,Y
@@ -23,9 +20,6 @@ C	Generate B and C arrays
 	      C(I,J)=(int(A(I))+B(I,J))/2+J-1
 	   ENDDO
  11	CONTINUE
-c	Format printing
-	write(FMT,'("(1x,",i0,"f7.2)")') DIV
-	write(iFMT,'("(1x,",i0,"i3)")') DIV
 C	Print original arrays
 	WRITE(*,*) 'Before sorting, array A is:'
 	DO 12 I=1,X/DIV

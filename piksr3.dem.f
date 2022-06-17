@@ -1,18 +1,16 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR3
-	use piksrt_dim, only : DIV,FMT,I,J,X,A,piksr3,read_file
+	use piksrt_dim, only : DIV,FMT,I,J,X,A,piksr3,read_file,iFMT
 	implicit none
 	integer B,C
 	real Br,Cr
 	DIMENSION B(X),C(X),Br(X),Cr(X)
-	CHARACTER(LEN = 256) :: iFMT
 	call read_file
 C	Generate B and C arrays
 	DO 11 I=1,X
 	   B(I)=I
 	   C(I)=(int(A(I))+B(I))/2
  11	CONTINUE
-	write(iFMT,'("(1x,",i0,"i3)")') DIV
 C	Sort A and mix B,C
 	Br=real(B)
 	Cr=real(C)

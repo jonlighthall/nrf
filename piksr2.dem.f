@@ -1,17 +1,15 @@
 	PROGRAM D8R2
 C	Driver for routine PIKSR2
-	use piksrt_dim
+	use piksrt_dim, only : DIV,FMT,I,J,X,A,piksr2,read_file,iFMT
 	implicit none
 	integer B
 	real Br
 	DIMENSION B(X),Br(X)
-	CHARACTER(LEN = 256) :: iFMT
 	call read_file
 C	Generate B array
 	DO 11 I=1,X
 	   B(I)=I
  11	CONTINUE
-	write(iFMT,'("(1x,",i0,"i3)")') DIV
 C	Sort A and mix B
 	Br=real(B)
 	CALL PIKSR2(X,A,Br)
