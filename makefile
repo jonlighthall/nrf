@@ -22,7 +22,7 @@ BINDIR=bin
 MODDIR=mod
 #
 # dependencies
-DEPS=$(addprefix $(OBJDIR)/,julday.o flmoon.o caldat.o)
+DEPS=$(addprefix $(OBJDIR)/,julday.o flmoon.o caldat.o moon_calc.o)
 #
 # executable name
 TARGET = badluk.exe

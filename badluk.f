@@ -1,25 +1,11 @@
       PROGRAM badluk
+      use moon_calc
       implicit none
-      interface
-         SUBROUTINE piksr4(n,arr,bn,brr,cn,crr,dn,drr)
-            INTEGER, intent(in) :: n,bn,cn,dn,brr(n,bn),crr(n,cn)
-            REAL, intent(in) :: arr(n)
-            character(len = dn), intent(in) :: drr(n,cn)
-         end subroutine
-         integer function JULDAY(IM,ID,IY)
-            integer, intent(in) :: IM,ID,IY
-            end function
-         SUBROUTINE flmoon(n,nph,jd,frac)
-            INTEGER n,nph,jd
-            REAL frac
-         end subroutine
-      end interface
-      INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,timezone
-     &     ,badcount,badmin,badmax,badtotal,whichbad,ntz,hour,min,i,j,k
-     &     ,l
+      INTEGER ic,icon,idwk,ifrac,iybeg,iyend,jday,timezone,badcount
+     &     ,badmin,badmax,badtotal,whichbad,ntz,i,j,k ,l
       LOGICAL newbad,rollback,check,list,dofrac,allbad
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
-      REAL TIMZON,frac,ffrac,sec
+      REAL TIMZON
       character(len = 7) :: zn(zs:ze) ! Time zone name 
       character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name 
       character(len = 256) :: fmt
@@ -92,12 +78,7 @@ c      dzn(-3) = 'ADT'
             jday=julday(im,13,iyyy) ! Is the 13th a Friday?
             idwk=mod(jday+1,7)
             if(idwk.eq.5) then
-               n=int(12.37*(real(iyyy-1900)+(real(im)-0.5)/12.))
-c     This value n is a first approximation to how many full moons have
-c     occurred since 1900. We will feed it into the phase routine and
-c     adjust it up or down until we determine that our desired 13th was
-c     or was not a full moon. The variable icon signals the direction of
-c     adjustment. 
+               n=n_full_moons(iyyy,im)
                icon=0
  1             call flmoon(n,2,jd,frac) ! Get date of full moon n.
                ifrac=nint(24.*(frac+TIMZON)) ! Convert to hours in correct time zone.
@@ -123,10 +104,8 @@ c     The following check is required for timezones > +12
                   jd=jd+1
                   ifrac=ifrac-24
                   ffrac=ffrac-24
-              endif
-               hour=int(ffrac)
-               min=int((ffrac-real(hour))*60)
-               sec=((ffrac-real(hour))*60-real(min))*60
+               endif
+               call qtime(ffrac,hour,min,sec)
                if(jd.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?
                      if(check)write(*,'(1x,a,i2,a,i2,a,i4)'
