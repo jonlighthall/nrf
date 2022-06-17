@@ -1,6 +1,6 @@
 	PROGRAM D8R1
 C	Driver for routine PIKSRT
-	use piksrt_dim
+	use piksrt_dim, only : DIV,FMT,I,J,X,A,piksrt,read_file
 	implicit none
 	call read_file
 C	Print original array
