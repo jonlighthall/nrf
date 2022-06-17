@@ -80,30 +80,7 @@ c      dzn(-3) = 'ADT'
                N=n_full_moons(iyyy,im)
                icon=0
  1             call flmoon(N,2,JD,FRAC) ! Get date of full moon n.
-               IFRAC=nint(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
-               FFRAC=(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
-               if(IFRAC.lt.0)then ! Convert from Julian Days beginning at noon 
-                  JD=JD-1       ! to civil days beginning at midnight.
-                  IFRAC=IFRAC+24
-                  FFRAC=FFRAC+24
-               endif
-               if((IFRAC.gt.12).or.(FFRAC.gt.12.0))then !flmoon.dem uses IFRAC.ge.12
-                  JD=JD+1
-                  IFRAC=IFRAC-12
-                  FFRAC=FFRAC-12
-               else
-                  IFRAC=IFRAC+12
-                  FFRAC=FFRAC+12
-               endif
-c     The following check is required for timezones > +12
-               if((IFRAC.gt.24).or.(FFRAC.gt.24.0))then
-                  if(check)write(*,'(a,i4,a,i2,a,f4.1,a,f4.1)'
-     &                 )' found overflow: yr=',iyyy,' m=',im
-     &                 ,' d0=13 t0=',FFRAC,'; d=14, t=',FFRAC-24
-                  JD=JD+1
-                  IFRAC=IFRAC-24
-                  FFRAC=FFRAC-24
-               endif
+               call convert_time(IFRAC,FFRAC,FRAC,TIMZON,JD)
                call qtime(FFRAC,HOUR,MIN,SEC)
                if(JD.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?

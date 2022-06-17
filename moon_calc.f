@@ -63,14 +63,14 @@ c     adjustment.
       integer JD,IFRAC
       real FRAC,FFRAC
       real, intent(in) :: TIMZON
-      IFRAC=NINT(24.*(FRAC+TIMZON))
-      FFRAC=(24.*(FRAC+TIMZON))
-      IF (IFRAC.LT.0) THEN
-         JD=JD-1
+      IFRAC=NINT(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
+      FFRAC=(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
+      IF (IFRAC.LT.0) THEN      ! Convert from Julian Days beginning at noon 
+         JD=JD-1                ! to civil days beginning at midnight.
          IFRAC=IFRAC+24
          FFRAC=FFRAC+24
       ENDIF
-      IF (IFRAC.GE.12) THEN
+      IF((IFRAC.GT.12).OR.(FFRAC.GT.12.0)) THEN ! flmoon.dem uses IFRAC.GE.12
          JD=JD+1
          IFRAC=IFRAC-12
          FFRAC=FFRAC-12
@@ -78,6 +78,15 @@ c     adjustment.
          IFRAC=IFRAC+12
          FFRAC=FFRAC+12
       ENDIF
+c     The following check is required for timezones > +12
+      if((IFRAC.gt.24).or.(FFRAC.gt.24.0))then
+         write(*,'(a,i4,a,i2,a,f4.1,a,f4.1)'
+     &        )' found overflow: yr=',iyyy,' m=',im
+     &        ,' d0=13 t0=',FFRAC,'; d=14, t=',FFRAC-24
+         JD=JD+1
+         IFRAC=IFRAC-24
+         FFRAC=FFRAC-24
+      endif
       end subroutine
 
       end module
