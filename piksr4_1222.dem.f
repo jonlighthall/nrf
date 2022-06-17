@@ -23,7 +23,7 @@ C	Generate B and C arrays
 	DO 11 I=1,X
 	   DO J=1,Y
 	      B(I,J)=I-1+J-1
-	      C(I,J)=(A(I)+B(I,J))/2+J-1
+	      C(I,J)=(int(A(I))+B(I,J))/2+J-1
 	      WRITE(D(I,J),iFMT)C(I,J)
 	   ENDDO
  11	CONTINUE
