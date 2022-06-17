@@ -7,16 +7,16 @@ C	Driver for routine FLMOON
 	DATA PHASE/'new moon','first quarter','full moon','last quarter'
 	1    /
 	DATA TIMSTR/' AM',' PM'/
-	INTEGER I,ID,IFRAC,ISTR,J1
+	INTEGER I,ID,ISTR,J1
 	WRITE(*,*) 'Date of the next few phases of the moon'
 	WRITE(*,*) 'Enter today''s date (e.g. 1,31,1982)'
-	TIMZON=TZONE/24.0
+	TIMZON=frac_time_zone(TZONE)
 	READ(*,*) IM,ID,IYYY
 	N=n_full_moons(IYYY,IM)
 	NPH=2
 	J1=JULDAY(IM,ID,IYYY)
 	CALL FLMOON(N,NPH,JD,FRAC)
-	N=N+real(J1-JD)/28.0
+	N=N+int(real(J1-JD)/28.0)
 	WRITE(*,'(/1X,A,T15,A,T27,A,T45,A)') 'Lunation','Date'
 	1    ,'Time(CST)','Phase'
 	DO 11 I=1,20
@@ -37,6 +37,7 @@ C	Driver for routine FLMOON
 	      FFRAC=FFRAC+12
 	   ENDIF
 	   call qtime(FFRAC,HOUR,MIN)
+c       convert time string to AM/PM
 	   IF (IFRAC.GT.12) THEN
 	      IFRAC=IFRAC-12
 	      FFRAC=FFRAC-12

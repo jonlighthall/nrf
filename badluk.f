@@ -1,8 +1,8 @@
       PROGRAM badluk
       use moon_calc
       implicit none
-      INTEGER ic,icon,idwk,ifrac,iybeg,iyend,jday,timezone,badcount
-     &     ,badmin,badmax,badtotal,whichbad,ntz,i,j,k ,l
+      INTEGER ic,icon,idwk,iybeg,iyend,jday,timezone,badcount,badmin
+     &     ,badmax,badtotal,whichbad,ntz,i,j,k ,l
       LOGICAL newbad,rollback,check,list,dofrac,allbad
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
       character(len = 7) :: zn(zs:ze) ! Time zone name 
@@ -71,7 +71,7 @@ c     daylight saving time names
       dzn(-5) = 'CDT'
       dzn(-4) = 'EDT'
 c      dzn(-3) = 'ADT'
-      TIMZON=real(timezone)/24.    
+      TIMZON=frac_time_zone(real(timezone))
       do 12 iyyy=iybeg,iyend ! Loop over each year,
          do 11 im=1,12       ! and each month.
             jday=julday(im,13,iyyy) ! Is the 13th a Friday?
@@ -80,28 +80,28 @@ c      dzn(-3) = 'ADT'
                N=n_full_moons(iyyy,im)
                icon=0
  1             call flmoon(N,2,JD,FRAC) ! Get date of full moon n.
-               ifrac=nint(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
+               IFRAC=nint(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
                FFRAC=(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
-               if(ifrac.lt.0)then ! Convert from Julian Days beginning at noon 
+               if(IFRAC.lt.0)then ! Convert from Julian Days beginning at noon 
                   JD=JD-1       ! to civil days beginning at midnight.
-                  ifrac=ifrac+24
+                  IFRAC=IFRAC+24
                   FFRAC=FFRAC+24
                endif
-               if((ifrac.gt.12).or.(FFRAC.gt.12.0))then
+               if((IFRAC.gt.12).or.(FFRAC.gt.12.0))then !flmoon.dem uses IFRAC.ge.12
                   JD=JD+1
-                  ifrac=ifrac-12
+                  IFRAC=IFRAC-12
                   FFRAC=FFRAC-12
                else
-                  ifrac=ifrac+12
+                  IFRAC=IFRAC+12
                   FFRAC=FFRAC+12
                endif
 c     The following check is required for timezones > +12
-               if((ifrac.gt.24).or.(FFRAC.gt.24.0))then
+               if((IFRAC.gt.24).or.(FFRAC.gt.24.0))then
                   if(check)write(*,'(a,i4,a,i2,a,f4.1,a,f4.1)'
      &                 )' found overflow: yr=',iyyy,' m=',im
      &                 ,' d0=13 t0=',FFRAC,'; d=14, t=',FFRAC-24
                   JD=JD+1
-                  ifrac=ifrac-24
+                  IFRAC=IFRAC-24
                   FFRAC=FFRAC-24
                endif
                call qtime(FFRAC,HOUR,MIN,SEC)
@@ -142,7 +142,7 @@ c     The following check is required for timezones > +12
                   bads(whichbad,2)=im
                   bads(whichbad,3)=bads(whichbad,3)+1
                   if(bads(whichbad,3)+1.eq.24)allbad=.true.
-                  times(whichbad,timezone)=ifrac
+                  times(whichbad,timezone)=IFRAC
                   write(sftimes(whichbad,timezone),'(i0.2,a,i0.2)')HOUR
      &                 ,':',MIN
                   if((FFRAC.gt.1).and.(FFRAC.lt.1.5)) then
@@ -167,7 +167,7 @@ c     The following check is required for timezones > +12
                   else
                      write (fmt,*)'(1x,a,i2,a,a,a)'
                   endif
-                  write (*,fmt) 'Full moon ',ifrac,
+                  write (*,fmt) 'Full moon ',IFRAC,
      &                 ' hrs after midnight (',zn(timezone),')'
                   if((.not.rollback).and.dofrac) then
                      write (*,'(1x,a,f4.1,a,a,a,i2,a,i2,a,i0.2,f0.1)')
