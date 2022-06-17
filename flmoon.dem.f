@@ -22,21 +22,7 @@ C	Approximate number of full moons since January 1900
 	1    ,'Time(CST)','Phase'
 	DO 11 I=1,20
 	   CALL FLMOON(N,NPH,JD,FRAC)
-	   IFRAC=NINT(24.*(FRAC+TIMZON))
-	   FFRAC=(24.*(FRAC+TIMZON))
-	   IF (IFRAC.LT.0) THEN
-	      JD=JD-1
-	      IFRAC=IFRAC+24
-	      FFRAC=FFRAC+24
-	   ENDIF
-	   IF (IFRAC.GE.12) THEN
-	      JD=JD+1
-	      IFRAC=IFRAC-12
-	      FFRAC=FFRAC-12
-	   ELSE
-	      IFRAC=IFRAC+12
-	      FFRAC=FFRAC+12
-	   ENDIF
+	   call convert_time(IFRAC,FFRAC,FRAC,TIMZON,JD)
 	   call qtime(FFRAC,HOUR,MIN)
 c       convert time string to AM/PM
 	   IF (IFRAC.GT.12) THEN
