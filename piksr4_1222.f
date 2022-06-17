@@ -5,9 +5,8 @@
 c     Sorts a 1D array arr(1:n) into ascending numerical order, by
 c     straight insertion, while making the corresponding rearrangement
 c     of the 2D arrays brr(1:n,1:bn) anc crr(1:n,1:cn).
-      INTEGER i,j
+      INTEGER i,j,b(bn),c(cn)
       REAL a
-      real b(bn),c(cn)
       character(len = dn) d(cn)
       do 12 j=2,n               ! Pick out each element in turn.
          a=arr(j)

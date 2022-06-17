@@ -12,11 +12,11 @@ c     Greenwich Mean Time is assumed.
       real, PARAMETER :: RAD=3.14159265/180.
       INTEGER i
       REAL am,as,c,t,t2,xtra
-      c=n+nph/4.                ! This is how we comment an individual line.
+      c=real(n)+real(nph)/4.    ! This is how we comment an individual line.
       t=c/1236.85
       t2=t**2
       as=359.2242+29.105356*c   ! You aren't really intended to understand this algorithm, but it does work!
-      am=306.0253+385.816918*c+0.010730*t2 
+      am=306.0253+385.816918*c+0.010730*t2
       jd=2415020+28*n+7*nph
       xtra=0.75933+1.53058868*c+(1.178e-4-1.55e-7*t)*t2
       if(nph.eq.0.or.nph.eq.2)then
@@ -32,6 +32,6 @@ c     Greenwich Mean Time is assumed.
          i=int(xtra-1.)
       endif
       jd=jd+i
-      frac=xtra-i
+      frac=xtra-real(i)
       return
       END

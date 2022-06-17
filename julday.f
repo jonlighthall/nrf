@@ -15,10 +15,10 @@ c     negative, B.C. Remember that the year after 1 B.C. was 1 A.D.
          jy=jy-1
          jm=mm+13
       endif
-      julday=int(365.25*jy)+int(30.6001*jm)+id+1720995
+      julday=int(365.25*real(jy))+int(30.6001*real(jm))+id+1720995
       if (id+31*(mm+12*iyyy).ge.IGREG) then ! Test whether to change to Gregorian Calendar.
-         ja=int(0.01*jy) 
-         julday=julday+2-ja+int(0.25*ja)
+         ja=int(0.01*real(jy) )
+         julday=julday+2-ja+int(0.25*real(ja))
       endif
       return
       END

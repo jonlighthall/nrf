@@ -2,17 +2,17 @@
       implicit none
       interface
          SUBROUTINE piksr4(n,arr,bn,brr,cn,crr,dn,drr)
-         INTEGER, intent(in) :: n,bn,cn,dn,brr(n,bn),crr(n,cn)
-         REAL, intent(in) :: arr(n)
-         character(len = dn), intent(in) :: drr(n,cn)
+            INTEGER, intent(in) :: n,bn,cn,dn,brr(n,bn),crr(n,cn)
+            REAL, intent(in) :: arr(n)
+            character(len = dn), intent(in) :: drr(n,cn)
          end subroutine
-      integer function JULDAY(IM,ID,IY)
-      integer, intent(in) :: IM,ID,IY
-      end function
-      SUBROUTINE flmoon(n,nph,jd,frac)
-      INTEGER n,nph,jd
-      REAL frac
-      end subroutine
+         integer function JULDAY(IM,ID,IY)
+            integer, intent(in) :: IM,ID,IY
+            end function
+         SUBROUTINE flmoon(n,nph,jd,frac)
+            INTEGER n,nph,jd
+            REAL frac
+         end subroutine
       end interface
       INTEGER ic,icon,idwk,ifrac,im,iybeg,iyend,iyyy,jd,jday,n,timezone
      &     ,badcount,badmin,badmax,badtotal,whichbad,ntz,hour,min,i,j,k
@@ -86,13 +86,13 @@ c     daylight saving time names
       dzn(-5) = 'CDT'
       dzn(-4) = 'EDT'
 c      dzn(-3) = 'ADT'
-      TIMZON=timezone/24.    
+      TIMZON=real(timezone)/24.    
       do 12 iyyy=iybeg,iyend ! Loop over each year,
          do 11 im=1,12       ! and each month.
             jday=julday(im,13,iyyy) ! Is the 13th a Friday?
             idwk=mod(jday+1,7)
             if(idwk.eq.5) then
-               n=12.37*(iyyy-1900+(im-0.5)/12.)
+               n=int(12.37*(real(iyyy-1900)+(real(im)-0.5)/12.))
 c     This value n is a first approximation to how many full moons have
 c     occurred since 1900. We will feed it into the phase routine and
 c     adjust it up or down until we determine that our desired 13th was
@@ -125,8 +125,8 @@ c     The following check is required for timezones > +12
                   ffrac=ffrac-24
               endif
                hour=int(ffrac)
-               min=int((ffrac-hour)*60)
-               sec=((ffrac-hour)*60-min)*60
+               min=int((ffrac-real(hour))*60)
+               sec=((ffrac-real(hour))*60-real(min))*60
                if(jd.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?
                      if(check)write(*,'(1x,a,i2,a,i2,a,i4)'
@@ -156,7 +156,7 @@ c     The following check is required for timezones > +12
                         else
                            write(*,'(a,i3)') ' Too many bad days!
      & Increase array size >',badtotal
-                           return
+                           stop
                         endif
                      endif      ! end new?
                   endif         ! end first?                 
@@ -195,7 +195,7 @@ c     The following check is required for timezones > +12
                      write (*,'(1x,a,f4.1,a,a,a,i2,a,i2,a,i0.2,f0.1)')
      &                    'Full moon ',ffrac,' hrs after midnight ('
      &                    ,zn(timezone),') at',hour,':',min,':',int(sec)
-     &                    ,sec-int(sec)
+     &                    ,sec-real(int(sec))
                   endif
                endif
                badcount = badcount + 1
@@ -227,7 +227,7 @@ c     /output.
       if(check) write(*,'(/a)') 'copying...'
       write(fmt,'(a,i2,a)')'(1x,i2,1x,f6.1,i5,i3,',ntz,'(i3))'
       do i=1,size
-         fyears(i)=bads(i,1)+bads(i,2)/12.
+         fyears(i)=real(bads(i,1))+real(bads(i,2))/12.
          if((i.le.badtotal).and.check)  write(*,fmt) i,fyears(i),bads(i
      &        ,1),bads(i,2),times(i,:)
       enddo
