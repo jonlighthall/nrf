@@ -24,6 +24,7 @@ c     define interfaces
       integer IYYY,IM
       integer HOUR,MIN
       real FFRAC,SEC
+      real TIMZON
 
       contains
       integer function n_full_moons(int_year,int_month)

@@ -8,7 +8,6 @@ C	Driver for routine FLMOON
 	1    /
 	DATA TIMSTR/' AM',' PM'/
 	INTEGER I,ID,IFRAC,ISTR,J1
-	real TIMZON
 	WRITE(*,*) 'Date of the next few phases of the moon'
 	WRITE(*,*) 'Enter today''s date (e.g. 1,31,1982)'
 	TIMZON=TZONE/24.0

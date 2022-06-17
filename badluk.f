@@ -5,7 +5,6 @@
      &     ,badmin,badmax,badtotal,whichbad,ntz,i,j,k ,l
       LOGICAL newbad,rollback,check,list,dofrac,allbad
       INTEGER, PARAMETER :: zs=-12,ze=14 ! The range of time zones to be searched.
-      REAL TIMZON
       character(len = 7) :: zn(zs:ze) ! Time zone name 
       character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name 
       character(len = 256) :: fmt
@@ -78,35 +77,35 @@ c      dzn(-3) = 'ADT'
             jday=julday(im,13,iyyy) ! Is the 13th a Friday?
             idwk=mod(jday+1,7)
             if(idwk.eq.5) then
-               n=n_full_moons(iyyy,im)
+               N=n_full_moons(iyyy,im)
                icon=0
- 1             call flmoon(n,2,jd,frac) ! Get date of full moon n.
-               ifrac=nint(24.*(frac+TIMZON)) ! Convert to hours in correct time zone.
-               ffrac=(24.*(frac+TIMZON)) ! Convert to hours in correct time zone.
+ 1             call flmoon(N,2,JD,FRAC) ! Get date of full moon n.
+               ifrac=nint(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
+               FFRAC=(24.*(FRAC+TIMZON)) ! Convert to hours in correct time zone.
                if(ifrac.lt.0)then ! Convert from Julian Days beginning at noon 
-                  jd=jd-1       ! to civil days beginning at midnight.
+                  JD=JD-1       ! to civil days beginning at midnight.
                   ifrac=ifrac+24
-                  ffrac=ffrac+24
+                  FFRAC=FFRAC+24
                endif
-               if((ifrac.gt.12).or.(ffrac.gt.12.0))then
-                  jd=jd+1
+               if((ifrac.gt.12).or.(FFRAC.gt.12.0))then
+                  JD=JD+1
                   ifrac=ifrac-12
-                  ffrac=ffrac-12
+                  FFRAC=FFRAC-12
                else
                   ifrac=ifrac+12
-                  ffrac=ffrac+12
+                  FFRAC=FFRAC+12
                endif
 c     The following check is required for timezones > +12
-               if((ifrac.gt.24).or.(ffrac.gt.24.0))then
+               if((ifrac.gt.24).or.(FFRAC.gt.24.0))then
                   if(check)write(*,'(a,i4,a,i2,a,f4.1,a,f4.1)'
      &                 )' found overflow: yr=',iyyy,' m=',im
-     &                 ,' d0=13 t0=',ffrac,'; d=14, t=',ffrac-24
-                  jd=jd+1
+     &                 ,' d0=13 t0=',FFRAC,'; d=14, t=',FFRAC-24
+                  JD=JD+1
                   ifrac=ifrac-24
-                  ffrac=ffrac-24
+                  FFRAC=FFRAC-24
                endif
-               call qtime(ffrac,hour,min,sec)
-               if(jd.eq.jday)then ! Did we hit our target day?
+               call qtime(FFRAC,HOUR,MIN,SEC)
+               if(JD.eq.jday)then ! Did we hit our target day?
                   if(badtotal.eq.0)then ! first?
                      if(check)write(*,'(1x,a,i2,a,i2,a,i4)'
      &                    )'found first bad day!',im,'/',13,'/',iyyy
@@ -114,7 +113,7 @@ c     The following check is required for timezones > +12
                      whichbad = badtotal
                   else          ! not first
                      if(check)write(*,'(a,i0.2,a,i0.2,a)',advance='no'
-     &                    )' found a bad day at ',hour,':',min
+     &                    )' found a bad day at ',HOUR,':',MIN
      &                    ,'. checking...'
                      newbad = .true.
                      do i=1,badtotal ! check
@@ -144,20 +143,20 @@ c     The following check is required for timezones > +12
                   bads(whichbad,3)=bads(whichbad,3)+1
                   if(bads(whichbad,3)+1.eq.24)allbad=.true.
                   times(whichbad,timezone)=ifrac
-                  write(sftimes(whichbad,timezone),'(i0.2,a,i0.2)')hour
-     &                 ,':',min
-                  if((ffrac.gt.1).and.(ffrac.lt.1.5)) then
+                  write(sftimes(whichbad,timezone),'(i0.2,a,i0.2)')HOUR
+     &                 ,':',MIN
+                  if((FFRAC.gt.1).and.(FFRAC.lt.1.5)) then
                      if(check) then 
                         write(*,'(a,i4,a,i2,a,a5,a,a5)'
      &                       )'  found margin: yr=',iyyy,' m=',im,' t0='
      &                       ,sftimes(whichbad,timezone),'; t='
      &                       ,sftimes(whichbad,timezone-1)
                         write(*,'(a,i0.2,a,i0.2,a,sp,i3)')
-     &                       '  new time should be ',hour-1,':',min,
+     &                       '  new time should be ',HOUR-1,':',MIN,
      &                       ' in zone ',timezone-1
                      endif
                      write(sftimes(whichbad,timezone-1),
-     &                    '(i0.2,a,i0.2)')hour-1,':',min
+     &                    '(i0.2,a,i0.2)')HOUR-1,':',MIN
                   endif
                   if( (rollback.and.(timezone.eq.-5).or.
      &                 (.not.rollback).and.list.and.newbad) ) then
@@ -172,9 +171,9 @@ c     The following check is required for timezones > +12
      &                 ' hrs after midnight (',zn(timezone),')'
                   if((.not.rollback).and.dofrac) then
                      write (*,'(1x,a,f4.1,a,a,a,i2,a,i2,a,i0.2,f0.1)')
-     &                    'Full moon ',ffrac,' hrs after midnight ('
-     &                    ,zn(timezone),') at',hour,':',min,':',int(sec)
-     &                    ,sec-real(int(sec))
+     &                    'Full moon ',FFRAC,' hrs after midnight ('
+     &                    ,zn(timezone),') at',HOUR,':',MIN,':',int(SEC)
+     &                    ,SEC-real(int(SEC))
                   endif
                endif
                badcount = badcount + 1
@@ -184,10 +183,10 @@ c     /output statements; very few programs in this book do any input
 c     /output. 
                   goto 2        ! Part of the break-structure, case of a match.
                else             ! Didn't hit it.
-                  ic=isign(1,jday-jd)
+                  ic=isign(1,jday-JD)
                   if(ic.eq.-icon) goto 2 ! Another break, case of no match.
                   icon=ic
-                  n=n+ic
+                  N=N+ic
                endif
                goto 1
  2             continue
