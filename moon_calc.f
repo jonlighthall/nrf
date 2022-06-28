@@ -107,8 +107,8 @@ c     The following check is required for timezones > +12
       character(len=*),intent(in) :: place
       integer,intent(in) :: year,month,target_day,test_day,n_moon,ic
      &     ,icon
-      if(debug_messages) write(*,'(2a,i4,a,i2,2(a,i7),3(a,i3))') place
-     &     ,' year=',year,' mon=',month,' jday=',target_day,' JD='
+      if(debug_messages) write(*,'(2a,i4,a,i2,2(a,i7),a,i4,2(a,i3))')
+     &     place,' year=',year,' mon=',month,' jday=',target_day,' JD='
      &     ,test_day,' N=',n_moon,' ic=',ic,' icon=',icon
 
       end subroutine
