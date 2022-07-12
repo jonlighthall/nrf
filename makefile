@@ -18,9 +18,9 @@ F90CFLAGS = -fimplicit-none $(warnings) $(compile_flags) $(output_flags) $(mod_f
 flflags = $^ $(output_flags)
 #
 # define subdirectories
-OBJDIR := obj
-MODDIR := mod
-BINDIR := bin
+OBJDIR = obj
+MODDIR = mod
+BINDIR = bin
 #
 # dependencies
 DEPS=$(addprefix $(OBJDIR)/,julday.o flmoon.o caldat.o moon_calc.o)
@@ -32,6 +32,14 @@ all: $(addprefix $(BINDIR)/,$(TARGET) flmoon.exe julday.exe caldat.exe piksrt.ex
 
 $(BINDIR)/$(TARGET): $(DEPS) $(addprefix $(OBJDIR)/,badluk.o piksr4_1222.o) | $(BINDIR)
 	$(FC) $(flflags) #-free-form
+$(BINDIR)/%.exe: $(addprefix $(OBJDIR)/,%.dem.o %.o piksrt_dim.o) $(DEPS) | $(BINDIR)
+	$(FC) $(flflags) 
+
+$(OBJDIR)/%.o: %.f | $(OBJDIR) $(MODDIR)
+	 $(FC) $(FCFLAGS)
+
+$(OBJDIR)/%.o: %.f90 | $(OBJDIR) $(MODDIR)
+	 $(FC) $(F90CFLAGS)
 #
 # define directory creation
 $(OBJDIR):
@@ -40,17 +48,7 @@ $(BINDIR):
 	mkdir -pv $(BINDIR)
 $(MODDIR):
 	mkdir -pv $(MODDIR)
-
-$(BINDIR)/%.exe: $(addprefix $(OBJDIR)/,%.dem.o %.o piksrt_dim.o) $(DEPS) | $(BINDIR)
-	$(FC) $(flflags) 
-
-$(OBJDIR)/%.o: %.f | $(OBJDIR) $(MODDIR)
-	 $(FC) $(FCFLAGS)
-
-
-$(OBJDIR)/%.o: %.f90 | $(OBJDIR) $(MODDIR)
-	 $(FC) $(F90CFLAGS)
-
+#
 CMD = @rm -vfrd
 clean:
 # remove compiled binaries
