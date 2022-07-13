@@ -6,15 +6,16 @@ output_flags = -o $@
 module_flags = -J $(MODDIR)
 #
 # fortran compiler flags
-FCFLAGS = -std=f2018 -fimplicit-none
+FCFLAGS = -std=f2018 -fimplicit-none $(warnings)
 F77CFLAGS = $(FCFLAGS) -fd-lines-as-comments
 F90CFLAGS = $(FCFLAGS) 
 
-warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
--Wcharacter-truncation -Wconversion-extra -Wimplicit-interface	\
--Wimplicit-procedure -Winteger-division -Wintrinsics-std	\
--Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs
-warnings = -w
+warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries		\
+-Wcharacter-truncation -Wconversion-extra -Wimplicit-interface		\
+-Wimplicit-procedure -Winteger-division -Wintrinsics-std		\
+-Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs	\
+-Werror
+#warnings = -w
 
 #
 # fortran link flags
@@ -103,6 +104,7 @@ distclean: clean
 # remove Emacs backup files
 	$(CMD) *~ \#*\#
 test: distclean all
+run: test
 # run executables which do no require user input
 	./$(BINDIR)/$(TARGET)
 	./$(BINDIR)/caldat.exe

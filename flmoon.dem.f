@@ -1,6 +1,8 @@
         PROGRAM D1R1
 C       Driver for routine FLMOON
-        use moon_calc
+      use moon_calc, only : convert_time,IFRAC,FFRAC,FRAC,TIMZON,JD
+     &     ,qtime,HOUR,MIN,IM,IYYY,N,NPH,TIMZON,frac_time_zone
+     &     ,flmoon,caldat,julday,n_full_moons
         implicit none
         real, PARAMETER :: TZONE=-6.0
         CHARACTER PHASE(4)*15,TIMSTR(2)*3

@@ -1,5 +1,7 @@
 PROGRAM badluk
-  use moon_calc
+  use moon_calc, only : debug_messages,ffrac,frac,hour,ifrac,im,iyyy&
+       &,jd,min,n,sec,timzon,frac_time_zone,julday,n_full_moons&
+       &,print_stats,flmoon,convert_time,qtime,piksr4
   implicit none
   INTEGER ic,icon,idwk,iybeg,iyend,jday,timezone,badcount,badmin,badmax,badtotal,whichbad,ntz,i,j,k ,l
   LOGICAL newbad,rollback,check,list,dofrac,allbad
@@ -18,9 +20,9 @@ PROGRAM badluk
 
   !     compile options
   rollback = .false.        ! rollback to original output
-  check = .true.            ! print check statements (debug)
+  check = .false.            ! print check statements (debug)
   debug_messages = check
-  list = .true.             ! print dates as they are found
+  list = .false.             ! print dates as they are found
   dofrac = .false.          ! print factional hours (minutes)
 
   !     allocate array size
@@ -201,7 +203,7 @@ PROGRAM badluk
                  write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names
                  write (fmt,'(a,i2,a)')'(14x,',ntz,'(1x,sp,i3))'
                  write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz      ,'(1x,a3))'
-                 write(*,*) repeat('-',13+4*ntz)
+                 write(*,*) repeat('-',int(13+4*ntz,8))
                  do, i=1,size
                     l=i-k
                     if(i.gt.k) then
@@ -210,7 +212,7 @@ PROGRAM badluk
                        write(*,*)
                     endif
                  enddo
-                 write(*,*)repeat("-",13+4*ntz)
+                 write(*,*)repeat("-",int(13+4*ntz,8))
                  write(*,'(2x,a)'      )'Note: times are rounded to the nearest hour.'
               else ! print fractional hours
                  write (fmt,'(a,i2,a)')'(a,',ntz,'(3x,a3))'
@@ -218,7 +220,7 @@ PROGRAM badluk
                  write (*,fmt) 'Standard time ',(szn(j),j=zs,ze) ! print standard names
                  write (*,fmt) 'UTC Offset    ',(zn(j),j=zs,ze) ! print zone names
                  write (fmt,'(a,i2,a)')'(1x,i2,1x,i2,a,i2,a,i4,',ntz      ,'(1x,a5))'
-                 write(*,*) repeat('-',13+6*ntz)
+                 write(*,*) repeat('-',int(13+6*ntz,8))
                  do, i=1,size
                     l=i-k
                     if(i.gt.k) then
@@ -227,7 +229,7 @@ PROGRAM badluk
                        write(*,*)
                     endif
                  enddo
-                 write(*,*)repeat("-",13+6*ntz)
+                 write(*,*)repeat("-",int(13+6*ntz,8))
                  write(*,'(2x,a)'      )'Note: times do not include atmospheric refraction.'
               endif
               if(allbad) write(*,*) ' * World-wide bad luck'
