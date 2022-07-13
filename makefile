@@ -16,7 +16,6 @@ warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs
 warnings = -w
 
-
 #
 # fortran link flags
 flflags = $^ $(output_flags)
@@ -46,23 +45,23 @@ all: $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
 
 sort=piksr
 $(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o)  |  $(MODS) $(BINDIR)
-	@echo "compiling pick sort $@..."
+	@echo "compiling pick sort executable $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
 $(BINDIR)/%.exe:  $(addprefix $(OBJDIR)/, %.dem.o) $(DEPS2)  |  $(MODS) $(BINDIR)
-	@echo "compiling driver $@..."	
+	@echo "compiling driver executable $@..."	
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
 $(BINDIR)/$(TARGET): $(DEPS) $(DEPS2) $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o)  | $(MODS) $(BINDIR)
-	@echo "compiling $@..."
+	@echo "compiling target $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
 $(OBJDIR)/%.dem.o : %.dem.f %.f | $(OBJDIR) $(MODS)
-	@echo "compiling driver $@..."
+	@echo "compiling driver object $@..."
 	$(FC) $(FCFLAGS) $(compile_flags) $(output_flags) $(module_flags)
 
 $(OBJDIR)/%.o $(MODDIR)/%.mod : %.f | $(OBJDIR) $(MODIR)
-	@echo "compiling f77 object/module $@..."
+	@echo "compiling $@..."
 	$(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
 
 $(OBJDIR)/%.o : %.f90 $(MODS) | $(OBJDIR)
