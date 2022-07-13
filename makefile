@@ -3,43 +3,75 @@ FC = gfortran
 # general flags
 compile_flags = -c $<
 output_flags = -o $@
-mod_flags = -J $(MODDIR)
+module_flags = -J $(MODDIR)
 #
-# fortran compile flags
+# fortran compiler flags
+FCFLAGS = -std=f2018 -fimplicit-none
+F77CFLAGS = $(FCFLAGS) -fd-lines-as-comments
+F90CFLAGS = $(FCFLAGS) 
+
 warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
 -Wcharacter-truncation -Wconversion-extra -Wimplicit-interface	\
 -Wimplicit-procedure -Winteger-division -Wintrinsics-std	\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs
-#warnings = -w
-FCFLAGS = $(F90CFLAGS) -fd-lines-as-comments
-F90CFLAGS = -fimplicit-none $(warnings) $(compile_flags) $(output_flags) $(mod_flags)
+warnings = -w
+
+
 #
 # fortran link flags
 flflags = $^ $(output_flags)
 #
 # define subdirectories
-OBJDIR = obj
-MODDIR = mod
-BINDIR = bin
+OBJDIR := obj
+MODDIR := mod
+BINDIR := bin
 #
 # dependencies
-DEPS=$(addprefix $(OBJDIR)/,julday.o flmoon.o caldat.o moon_calc.o)
+SRC=$(wildcard *.f)
+OBJS = $(addprefix $(OBJDIR)/,$(SRC:.f=.o))
+
+DEMOS=$(wildcard *.dem.f)
+DRIVERS=$(addprefix $(BINDIR)/,$(DEMOS:.dem.f=.exe))
+
+MODS = piksrt_dim.mod moon_calc.mod
+DEPS := $(addprefix $(OBJDIR)/,$(MODS:.mod=.o))
+MODS := $(addprefix $(MODDIR)/,$(MODS))
+
+DEPS2=$(addprefix $(OBJDIR)/,julday.o flmoon.o caldat.o moon_calc.o)
 #
 # executable name
 TARGET = badluk.exe
 
-all: $(addprefix $(BINDIR)/,$(TARGET) flmoon.exe julday.exe caldat.exe piksrt.exe piksr2.exe piksr3.exe piksr3_122.exe piksr4_1222.exe)
+all: $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
 
-$(BINDIR)/$(TARGET): $(DEPS) $(addprefix $(OBJDIR)/,badluk.o piksr4_1222.o) | $(BINDIR)
-	$(FC) $(flflags) #-free-form
-$(BINDIR)/%.exe: $(addprefix $(OBJDIR)/,%.dem.o %.o piksrt_dim.o) $(DEPS) | $(BINDIR)
-	$(FC) $(flflags) 
+sort=piksr
+$(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o)  |  $(MODS) $(BINDIR)
+	@echo "compiling 1$@..."
+	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
-$(OBJDIR)/%.o: %.f | $(OBJDIR) $(MODDIR)
-	 $(FC) $(FCFLAGS)
+$(BINDIR)/%.exe:  $(addprefix $(OBJDIR)/, %.dem.o) $(DEPS2)  |  $(MODS) $(BINDIR)
+	@echo "exe: 2moons"	
+	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
-$(OBJDIR)/%.o: %.f90 | $(OBJDIR) $(MODDIR)
-	 $(FC) $(F90CFLAGS)
+$(BINDIR)/$(TARGET): $(DEPS) $(DEPS2) $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o)  | $(MODS) $(BINDIR)
+	@echo "compiling 3$@..."
+	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
+
+$(OBJDIR)/%.dem.o : %.dem.f %.f | $(OBJDIR) $(MODS)
+	@echo "compiling 4$@..."
+	$(FC) $(FCFLAGS) $(compile_flags) $(output_flags) $(module_flags)
+
+$(OBJDIR)/%.o $(MODDIR)/%.mod : %.f | $(OBJDIR) $(MODIR)
+	@echo "compiling 5$@..."
+	$(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
+
+$(OBJDIR)/%.o : %.f90 $(MODS) | $(OBJDIR)
+	@echo "compiling 6$@..."
+	$(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
+
+$(MODDIR)/%.mod : %.f90 | $(MODDIR)
+	@echo "compiling 7$@..."
+	$(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
 #
 # define directory creation
 $(OBJDIR):
@@ -48,6 +80,8 @@ $(BINDIR):
 	mkdir -pv $(BINDIR)
 $(MODDIR):
 	mkdir -pv $(MODDIR)
+# keep intermediate object files
+.SECONDARY: $(OBJS) $(MODS)
 #
 CMD = @rm -vfrd
 clean:
@@ -69,8 +103,8 @@ distclean: clean
 	$(CMD) *.~*~
 # remove Emacs backup files
 	$(CMD) *~ \#*\#
-test: distclean $(addprefix $(BINDIR)/,$(TARGET) caldat.exe piksrt.exe)
-# test executabiles that run without user input
+test: distclean all
+# run executables which do no require user input
 	./$(BINDIR)/$(TARGET)
 	./$(BINDIR)/caldat.exe
 	./$(BINDIR)/piksrt.exe
