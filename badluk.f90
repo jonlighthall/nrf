@@ -7,7 +7,7 @@ PROGRAM badluk
   character(len = 7) :: zn(zs:ze) ! Time zone name
   character(len = 7) :: dzn(zs:ze), szn(zs:ze) ! Time zone name
   character(len = 256) :: fmt
-  DATA iybeg,iyend /1900,1904/ ! The range of dates to be searched.
+  DATA iybeg,iyend /1900,2050/ ! The range of dates to be searched.
   integer size
   integer,allocatable :: bads(:,:) !year,month,count
   integer,allocatable :: times(:,:)
@@ -44,7 +44,7 @@ PROGRAM badluk
   whichbad = 0
   allbad = .false.
   ntz=ze-zs+1
-  do 10 timezone = zs, ze
+  do timezone = zs, ze
      !     The full moon of Friday, June 13, 2014 did not (tecncially)
      !     occur in the Easter Time Zone (the program default). This
      !     loop is added to include other time zones.
@@ -70,8 +70,8 @@ PROGRAM badluk
      dzn(-4) = 'EDT'
      !     dzn(-3) = 'ADT'
      TIMZON=frac_time_zone(real(timezone))
-     do 12 iyyy=iybeg,iyend ! Loop over each year,
-        do 11 im=1,12       ! and each month.
+     do iyyy=iybeg,iyend ! Loop over each year,
+        do im=1,12       ! and each month.
            jday=julday(im,13,iyyy) ! calculate the 13th
            idwk=mod(jday+1,7) ! get weekday number
            if(idwk.eq.5) then ! Is the 13th a Friday?
@@ -157,8 +157,8 @@ PROGRAM badluk
               goto 1
 2             continue
            endif
-11         continue
-12         continue
+        enddo
+     enddo
            if(check) write (*,'(a,i2,a)') ' found ',badcount,' bad days in zone'
            if(badcount.gt.badmax)then
               badmax=badcount
@@ -166,7 +166,7 @@ PROGRAM badluk
            if(badcount.lt.badmax)then
               badmin=badcount
            endif
-10         continue
+  enddo
            if(check) write(*,'(/a)') 'copying...'
            write(fmt,'(a,i2,a)')'(1x,i2,1x,f6.1,i5,i3,',ntz,'(i3))'
            do i=1,size
