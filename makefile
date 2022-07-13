@@ -46,31 +46,31 @@ all: $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
 
 sort=piksr
 $(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o)  |  $(MODS) $(BINDIR)
-	@echo "compiling 1$@..."
+	@echo "compiling pick sort $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
 $(BINDIR)/%.exe:  $(addprefix $(OBJDIR)/, %.dem.o) $(DEPS2)  |  $(MODS) $(BINDIR)
-	@echo "exe: 2moons"	
+	@echo "compiling driver $@..."	
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
 $(BINDIR)/$(TARGET): $(DEPS) $(DEPS2) $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o)  | $(MODS) $(BINDIR)
-	@echo "compiling 3$@..."
+	@echo "compiling $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
 $(OBJDIR)/%.dem.o : %.dem.f %.f | $(OBJDIR) $(MODS)
-	@echo "compiling 4$@..."
+	@echo "compiling driver $@..."
 	$(FC) $(FCFLAGS) $(compile_flags) $(output_flags) $(module_flags)
 
 $(OBJDIR)/%.o $(MODDIR)/%.mod : %.f | $(OBJDIR) $(MODIR)
-	@echo "compiling 5$@..."
+	@echo "compiling f77 object/module $@..."
 	$(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
 
 $(OBJDIR)/%.o : %.f90 $(MODS) | $(OBJDIR)
-	@echo "compiling 6$@..."
+	@echo "compiling f90 object $@..."
 	$(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
 
 $(MODDIR)/%.mod : %.f90 | $(MODDIR)
-	@echo "compiling 7$@..."
+	@echo "compiling f90 module $@..."
 	$(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
 #
 # define directory creation
