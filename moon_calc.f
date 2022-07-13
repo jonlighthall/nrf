@@ -77,9 +77,10 @@ c     beginning at midnight
 c     If the time is after noon, increment the Julian Day and reset the
 c     time
       IF((IFRAC.GE.12).AND.(FFRAC.GE.12.0)) THEN ! flmoon.dem uses IFRAC.GE.12
-         if(IFRAC.EQ.12) write(*,'(a,i4,a,i4,a,i2,a,i7,a,f4.1,a,f4.1,a
-     &        ,f5.1)')' found overflow: N=',N,' yr=',iyyy,' m=',im,
-     &        ' d0=',JD,' t0=',FFRAC,'; t=',FFRAC-12,' TZ=',TIMZON*24
+         if((IFRAC.EQ.12).and.(debug_messages)) write(*,'(a,i4,a,i4,a,i2
+     &        ,a,i7,a,f4.1,a,f4.1,a,f5.1)')' found overflow: N=',N,' yr
+     &        =',iyyy,' m=',im,' d0=',JD,' t0=',FFRAC,'; t=',FFRAC-12
+     &,'TZ=',TIMZON*24
 
          JD=JD+1
          IFRAC=IFRAC-12
