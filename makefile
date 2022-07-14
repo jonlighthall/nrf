@@ -33,27 +33,31 @@ OBJS = $(addprefix $(OBJDIR)/,$(SRC:.f=.o))
 DEMOS=$(wildcard *.dem.f)
 DRIVERS=$(addprefix $(BINDIR)/,$(DEMOS:.dem.f=.exe))
 
-MODS = piksrt_dim.mod moon_calc.mod dates.mod
-DEPS := $(addprefix $(OBJDIR)/,$(MODS:.mod=.o))
-MODS := $(addprefix $(MODDIR)/,$(MODS))
+MODS = piksrt_dim moon_calc dates
+SUBS =  flmoon caldat
+FUNS = julday
+DEPS := $(addprefix $(OBJDIR)/,$(addsuffix .o,$(MODS) $(FUNS) $(SUBS)))
+MODS := $(addprefix $(MODDIR)/,$(addsuffix .mod,$(MODS)))
 
-DEPS2=$(addprefix $(OBJDIR)/,julday.o flmoon.o caldat.o moon_calc.o)
 #
 # executable name
 TARGET = badluk.exe
 
-all: $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS) $(OBJS)
+EXES = $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
+
+all: $(EXES) $(OBJS) $(DEPS) $(MODS)
+	@echo "$@ done"
 
 sort=piksr
-$(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o) | $(MODS) $(BINDIR)
+$(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o) | $(BINDIR)
 	@echo "compiling pick sort executable $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
-$(BINDIR)/%.exe:  $(addprefix $(OBJDIR)/, %.dem.o) $(DEPS2) $(DEPS) |  $(MODS) $(BINDIR)
+$(BINDIR)/%.exe: $(addprefix $(OBJDIR)/, %.dem.o) $(DEPS) | $(BINDIR)
 	@echo "compiling driver executable $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
-$(BINDIR)/$(TARGET): $(DEPS) $(DEPS2) $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o) | $(MODS) $(BINDIR)
+$(BINDIR)/$(TARGET): $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o) $(DEPS) | $(BINDIR)
 	@echo "compiling target executable $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
@@ -63,6 +67,7 @@ $(OBJDIR)/%.dem.o : %.dem.f %.f | $(OBJDIR) $(MODS)
 
 $(OBJDIR)/%.o $(MODDIR)/%.mod : %.f | $(OBJDIR) $(MODDIR)
 	@echo "compiling $@..."
+	echo "$*"
 	$(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
 
 $(OBJDIR)/%.o : %.f90 $(MODS) | $(OBJDIR)
@@ -75,11 +80,11 @@ $(MODDIR)/%.mod : %.f90 | $(MODDIR)
 #
 # define directory creation
 $(OBJDIR):
-	mkdir -pv $(OBJDIR)
+	@mkdir -v $(OBJDIR)
 $(BINDIR):
-	mkdir -pv $(BINDIR)
+	@mkdir -v $(BINDIR)
 $(MODDIR):
-	mkdir -pv $(MODDIR)
+	@mkdir -v $(MODDIR)
 # keep intermediate object files
 .SECONDARY: $(OBJS) $(MODS)
 #
@@ -98,14 +103,19 @@ clean:
 	$(CMD) *.exe
 	$(CMD) *.out
 	$(CMD) fort.*
+	@echo "$@ done"
 distclean: clean
 # remove Git versions
 	$(CMD) *.~*~
 # remove Emacs backup files
 	$(CMD) *~ \#*\#
+	@echo "$@ done"
 test: distclean all
+# test the makefile
+	@echo "$@ done"	
 run: test
 # run executables which do no require user input
 	./$(BINDIR)/$(TARGET)
 	./$(BINDIR)/caldat.exe
 	./$(BINDIR)/piksrt.exe
+	@echo "$@ done"
