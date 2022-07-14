@@ -13,5 +13,15 @@ module dates
   CHARACTER NAME(12)*10
   DATA NAME/'January','February','March','April','May','June','July','August','September','October','November','December'/
 
+  CHARACTER TXT*40
+  integer N
+  integer,parameter :: unit = 1
+contains
+  subroutine read_file()
+    ! read data files
+    OPEN(unit,FILE='dat/dates.dat',STATUS='OLD')
+    READ(unit,'(A)') TXT
+    READ(unit,*) N
+  end subroutine read_file
 
 end module dates
