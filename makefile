@@ -14,7 +14,7 @@ warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries		\
 -Wcharacter-truncation -Wconversion-extra -Wimplicit-interface		\
 -Wimplicit-procedure -Winteger-division -Wintrinsics-std		\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs	\
--Werror
+
 #warnings = -w
 
 #
@@ -33,7 +33,7 @@ OBJS = $(addprefix $(OBJDIR)/,$(SRC:.f=.o))
 DEMOS=$(wildcard *.dem.f)
 DRIVERS=$(addprefix $(BINDIR)/,$(DEMOS:.dem.f=.exe))
 
-MODS = piksrt_dim.mod moon_calc.mod
+MODS = piksrt_dim.mod moon_calc.mod dates.mod
 DEPS := $(addprefix $(OBJDIR)/,$(MODS:.mod=.o))
 MODS := $(addprefix $(MODDIR)/,$(MODS))
 
@@ -42,14 +42,14 @@ DEPS2=$(addprefix $(OBJDIR)/,julday.o flmoon.o caldat.o moon_calc.o)
 # executable name
 TARGET = badluk.exe
 
-all: $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
+all: $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS) $(OBJS)
 
 sort=piksr
 $(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o) | $(MODS) $(BINDIR)
 	@echo "compiling pick sort executable $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
-$(BINDIR)/%.exe:  $(addprefix $(OBJDIR)/, %.dem.o) $(DEPS2)  |  $(MODS) $(BINDIR)
+$(BINDIR)/%.exe:  $(addprefix $(OBJDIR)/, %.dem.o) $(DEPS2) $(DEPS) |  $(MODS) $(BINDIR)
 	@echo "compiling driver executable $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 

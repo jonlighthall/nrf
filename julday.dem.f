@@ -1,17 +1,12 @@
       PROGRAM D1R2
 C     Driver for JULDAY
+      use dates
       implicit none
-      interface
-         integer function JULDAY(IM,ID,IY)
-         integer, intent(in) :: IM,ID,IY
-         end function
-      end interface
-      CHARACTER TXT*40,NAME(12)*15
+      CHARACTER TXT*40
       integer I,IM,ID,IY,N
       integer,parameter :: n_loop=20
-      DATA NAME/'January','February','March','April','May','June','July'
-     &     ,'August','September','October','November','December'/
-      OPEN(1,FILE='dates.dat',STATUS='OLD')
+
+      OPEN(1,FILE='dat/dates.dat',STATUS='OLD')
       READ(1,'(A)') TXT
       READ(1,*) N
       WRITE(*,'(/1X,A,T12,A,T17,A,T23,A,T37,A/)') 'Month','Day','Year'

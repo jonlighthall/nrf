@@ -1,21 +1,11 @@
         PROGRAM D1R4
-C       Driver for routine CALDAT
+C     Driver for routine CALDAT
+      use dates
         implicit none
-        interface
-           SUBROUTINE caldat(julian,mm,id,iyyy)
-           INTEGER, intent(in) :: julian,mm,id,iyyy
-           end subroutine
-        integer function JULDAY(IM,ID,IY)
-        integer, intent(in) :: IM,ID,IY
-        end function
-        end interface
         integer N,I,IM,ID,IY,IYCOPY,J,IMM,IDD,IYY
-        CHARACTER NAME(12)*10
+
 C       Check whether CALDAT properly undoes the operation of JULDAY
-        DATA NAME/'January','February','March','April','May',
-     *          'June','July','August','September','October',
-     *          'November','December'/
-        OPEN(5,FILE='dates.dat',STATUS='OLD')
+        OPEN(5,FILE='dat/dates.dat',STATUS='OLD')
         READ(5,*)
         READ(5,*) N
         WRITE(*,'(/1X,A,T40,A)') 'Original Date:','Reconstructed Date:'

@@ -35,7 +35,7 @@ contains
 
   subroutine read_file()
     ! read data files
-    OPEN(UNIT,FILE='tarray.dat',STATUS='OLD')
+    OPEN(UNIT,FILE='dat/tarray.dat',STATUS='OLD')
     READ(UNIT,*) (A(I),I=1,X)
     CLOSE(UNIT)
     write(*,*) 'Contents of tarray.dat:'
