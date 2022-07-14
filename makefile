@@ -8,7 +8,7 @@ module_flags = -J $(MODDIR)
 # fortran compiler flags
 FCFLAGS = -std=f2018 -fimplicit-none $(warnings)
 F77CFLAGS = $(FCFLAGS) -fd-lines-as-comments
-F90CFLAGS = $(FCFLAGS) 
+F90CFLAGS = $(FCFLAGS)
 
 warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries		\
 -Wcharacter-truncation -Wconversion-extra -Wimplicit-interface		\
@@ -19,7 +19,7 @@ warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries		\
 
 #
 # fortran link flags
-flflags = $^ $(output_flags)
+flflags = $(output_flags) $^
 #
 # define subdirectories
 OBJDIR := obj
@@ -45,23 +45,23 @@ TARGET = badluk.exe
 all: $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
 
 sort=piksr
-$(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o)  |  $(MODS) $(BINDIR)
+$(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o) | $(MODS) $(BINDIR)
 	@echo "compiling pick sort executable $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
 $(BINDIR)/%.exe:  $(addprefix $(OBJDIR)/, %.dem.o) $(DEPS2)  |  $(MODS) $(BINDIR)
-	@echo "compiling driver executable $@..."	
+	@echo "compiling driver executable $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
-$(BINDIR)/$(TARGET): $(DEPS) $(DEPS2) $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o)  | $(MODS) $(BINDIR)
-	@echo "compiling target $@..."
+$(BINDIR)/$(TARGET): $(DEPS) $(DEPS2) $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o) | $(MODS) $(BINDIR)
+	@echo "compiling target executable $@..."
 	$(FC) $(FCFLAGS) $(flflags) $(module_flags)
 
 $(OBJDIR)/%.dem.o : %.dem.f %.f | $(OBJDIR) $(MODS)
 	@echo "compiling driver object $@..."
 	$(FC) $(FCFLAGS) $(compile_flags) $(output_flags) $(module_flags)
 
-$(OBJDIR)/%.o $(MODDIR)/%.mod : %.f | $(OBJDIR) $(MODIR)
+$(OBJDIR)/%.o $(MODDIR)/%.mod : %.f | $(OBJDIR) $(MODDIR)
 	@echo "compiling $@..."
 	$(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
 
