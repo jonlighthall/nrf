@@ -4,15 +4,14 @@ FC = gfortran
 compile_flags = -c $<
 output_flags = -o $@
 module_flags = -J $(MODDIR)
+options = -std=f2018 -fimplicit-none
 warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries		\
 -Wcharacter-truncation -Wconversion-extra -Wimplicit-interface		\
 -Wimplicit-procedure -Winteger-division -Wintrinsics-std		\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs	\
 #
 # fortran compiler flags
-FCFLAGS = -std=f2018 -fimplicit-none $(warnings)
-F77CFLAGS = $(FCFLAGS) -fd-lines-as-comments
-F90CFLAGS = $(FCFLAGS)
+FCFLAGS =  $(options) $(warnings)
 FC.COMPILE.o = $(FC) $(FCFLAGS) $(compile_flags) $(output_flags) $(module_flags)
 FC.COMPILE.mod = $(FC) $(FCFLAGS) $(compile_flags) -o $(OBJDIR)/$*.o $(module_flags)
 #
@@ -71,7 +70,7 @@ $(OBJDIR)/%.o : %.f90 $(MODS) | $(OBJDIR)
 	@echo "compiling f90 object $@..."
 	$(FC.COMPILE.o)
 
-$(MODDIR)/%.mod : %.f90 | $(MODDIR)
+$(MODDIR)/%.mod : %.f90 | $(OBJDIR) $(MODDIR)
 	@echo "compiling f90 module $@..."
 	$(FC.COMPILE.mod)
 #
@@ -87,6 +86,7 @@ $(MODDIR):
 #
 CMD = @rm -vfrd
 clean:
+	@echo removing files...	
 # remove compiled binaries
 	$(CMD) $(TARGET)
 	$(CMD) $(OBJDIR)/*.o
