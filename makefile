@@ -4,23 +4,23 @@ FC = gfortran
 # general flags
 compile = -c $<
 output = -o $@
-module = -J $(MODDIR)
+includes = -J $(MODDIR)
 options = -fimplicit-none
 warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
 -Wcharacter-truncation -Wconversion-extra -Wimplicit-interface	\
 -Wimplicit-procedure -Winteger-division -Wintrinsics-std	\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all
-debug = -g							\
--ffpe-trap=invalid,zero,overflow,underflow,inexact,denormal	\
--fcheck=all -fbacktrace
+debug = -g -fbacktrace -fcheck=all -ffpe-trap=invalid
+#-ffpe-trap=invalid,zero,overflow,underflow,inexact,denormal
 #
 # fortran compile flags
-FCFLAGS = $(compile) $(module) $(options) $(warnings)
+FCFLAGS = $(compile) $(includes) $(options) $(warnings)
 F77.FLAGS = -fd-lines-as-comments -Wno-tabs
 F90.FLAGS = -std=f2008 $(debug)
 FC.COMPILE = $(FC) $(FCFLAGS)
-FC.COMPILE.o = $(FC.COMPILE) $(output) 
-FC.COMPILE.mod = $(FC.COMPILE) -o $(OBJDIR)/$*.o
+FC.COMPILE.o = $(FC.COMPILE)  $(output) $(F77.FLAGS)
+FC.COMPILE.o.f90 = $(FC.COMPILE) $(output) $(F90.FLAGS)
+FC.COMPILE.mod = $(FC.COMPILE) -o $(OBJDIR)/$*.o $(F90.FLAGS)
 #
 # fortran link flags
 FLFLAGS = $(output) $^
@@ -88,7 +88,7 @@ $(OBJDIR)/%.o : %.f $(MODS) | $(OBJDIR)
 	$(FC.COMPILE.o)
 $(OBJDIR)/%.o: %.f90 $(MODS) | $(OBJDIR)
 	@echo "\ncompiling generic f90 object $@..."
-	$(FC.COMPILE.o)
+	$(FC.COMPILE.o.f90)
 $(MODDIR)/%.mod : %.f | $(OBJDIR) $(MODDIR)
 	@echo "\ncompiling generic module $@..."
 	$(FC.COMPILE.mod)
@@ -136,7 +136,7 @@ distclean: clean
 #
 # test the makefile
 test: distclean all
-	@echo "$@ done"	
+	@echo "$@ done"
 #
 # run executables
 run: test
