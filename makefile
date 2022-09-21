@@ -10,12 +10,12 @@ warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
 -Wcharacter-truncation -Wconversion-extra -Wimplicit-interface	\
 -Wimplicit-procedure -Winteger-division -Wintrinsics-std	\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all
-debug = -g -fbacktrace -fcheck=all -ffpe-trap=invalid
-#-ffpe-trap=invalid,zero,overflow,underflow,inexact,denormal
+debug = -g -fbacktrace -fcheck=all			\
+-ffpe-trap=invalid,zero,overflow,underflow,denormal
 #
 # fortran compile flags
 FCFLAGS = $(compile) $(includes) $(options) $(warnings)
-F77.FLAGS = -fd-lines-as-comments -Wno-tabs
+F77.FLAGS = -fd-lines-as-comments
 F90.FLAGS = -std=f2008 $(debug)
 FC.COMPILE = $(FC) $(FCFLAGS)
 FC.COMPILE.o = $(FC.COMPILE)  $(output) $(F77.FLAGS)
