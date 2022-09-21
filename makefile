@@ -10,7 +10,7 @@ warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries		\
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all -Wno-tabs	\
 #
 # fortran compiler flags
-FCFLAGS = -std=f2018 -fimplicit-none $(warnings)
+FCFLAGS = -std=f2008 -fimplicit-none $(warnings)
 F77CFLAGS = $(FCFLAGS) -fd-lines-as-comments
 F90CFLAGS = $(FCFLAGS)
 FC.COMPILE.o = $(FC) $(FCFLAGS) $(compile_flags) $(output_flags) $(module_flags)
