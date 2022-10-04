@@ -83,9 +83,6 @@ $(BINDIR)/%.exe: $(OBJDIR)/%.dem.o $(DEPS) | $(BINDIR)
 $(OBJDIR)/%.dem.o: %.dem.f %.f $(MODS) | $(OBJDIR)
 	@echo "\ncompiling driver object $@..."
 	$(FC.COMPILE.o)
-#
-# independent object and module recipes ensures that if (somehow) a
-# module is updated, the object files will be recompiled
 $(OBJDIR)/%.o: %.f $(MODS) | $(OBJDIR)
 	@echo "\ncompiling generic object $@..."
 	$(FC.COMPILE.o)
@@ -93,8 +90,8 @@ $(OBJDIR)/%.o: %.f90 $(MODS) | $(OBJDIR)
 	@echo "\ncompiling generic f90 object $@..."
 	$(FC.COMPILE.o.f90)
 $(MODDIR)/%.mod: %.f | $(OBJDIR) $(MODDIR)
-       @echo "\ncompiling generic module $@..."
-       $(FC.COMPILE.mod)
+	@echo "\ncompiling generic module $@..."
+	$(FC.COMPILE.mod)
 $(MODDIR)/%.mod: %.f90 | $(OBJDIR) $(MODDIR)
 	@echo "\ncompiling generic f90 module $@..."
 	$(FC.COMPILE.mod)
