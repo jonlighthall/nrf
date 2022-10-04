@@ -63,7 +63,7 @@ TARGET = badluk.exe
 DRIVERS=$(addprefix $(BINDIR)/,$(DEMOS:.dem.f=.exe))
 EXES = $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
 
-all: $(EXES) | $(OBJS) $(DEPS) $(MODS)
+all: $(EXES) $(OBJS) $(DEPS) $(MODS)
 	@echo "$@ done"
 #
 # specific recipies
@@ -80,15 +80,21 @@ $(BINDIR)/$(TARGET): $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o) 
 $(BINDIR)/%.exe: $(OBJDIR)/%.dem.o $(DEPS) | $(BINDIR)
 	@echo "\nlinking driver executable $@..."
 	$(FC.LINK)
-$(OBJDIR)/%.dem.o: %.dem.f %.f | $(OBJDIR) $(MODS)
+$(OBJDIR)/%.dem.o: %.dem.f %.f $(MODS) | $(OBJDIR)
 	@echo "\ncompiling driver object $@..."
 	$(FC.COMPILE.o)
+#
+# independent object and module recipes ensures that if (somehow) a
+# module is updated, the object files will be recompiled
 $(OBJDIR)/%.o: %.f $(MODS) | $(OBJDIR)
 	@echo "\ncompiling generic object $@..."
 	$(FC.COMPILE.o)
 $(OBJDIR)/%.o: %.f90 $(MODS) | $(OBJDIR)
 	@echo "\ncompiling generic f90 object $@..."
 	$(FC.COMPILE.o.f90)
+$(MODDIR)/%.mod: %.f | $(OBJDIR) $(MODDIR)
+       @echo "\ncompiling generic module $@..."
+       $(FC.COMPILE.mod)
 $(MODDIR)/%.mod: %.f90 | $(OBJDIR) $(MODDIR)
 	@echo "\ncompiling generic f90 module $@..."
 	$(FC.COMPILE.mod)
