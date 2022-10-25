@@ -110,28 +110,28 @@ $(MODDIR):
 .PHONY: clean distclean
 #
 # clean up routines
-CMD = @rm -vfrd
+RM = @rm -vfrd
 clean:
 	@echo removing files...
 # remove compiled binaries
-	$(CMD) $(TARGET)
-	$(CMD) $(OBJDIR)/*.o
-	$(CMD) $(OBJDIR)
-	$(CMD) *.o *.obj
-	$(CMD) $(MODDIR)/*.mod
-	$(CMD) $(MODDIR)
-	$(CMD) *.mod
-	$(CMD) $(BINDIR)/*.exe
-	$(CMD) $(BINDIR)
-	$(CMD) *.exe
-	$(CMD) *.out
-	$(CMD) fort.*
+	$(RM) $(TARGET)
+	$(RM) $(OBJDIR)/*.o
+	$(RM) $(OBJDIR)
+	$(RM) *.o *.obj
+	$(RM) $(MODDIR)/*.mod
+	$(RM) $(MODDIR)
+	$(RM) *.mod
+	$(RM) $(BINDIR)/*.exe
+	$(RM) $(BINDIR)
+	$(RM) *.exe
+	$(RM) *.out
+	$(RM) fort.*
 	@echo "$@ done"
 distclean: clean
 # remove Git versions
-	$(CMD) *.~*~
+	$(RM) *.~*~
 # remove Emacs backup files
-	$(CMD) *~ \#*\#
+	$(RM) *~ \#*\#
 	@echo "$@ done"
 #
 # test the makefile
@@ -139,7 +139,7 @@ test: distclean all
 	@echo "$@ done"
 #
 # run executables
-run: test
+run: $(EXES)
 # run executables which do no require user input
 	./$(BINDIR)/$(TARGET)
 	./$(BINDIR)/caldat.exe
