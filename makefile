@@ -111,22 +111,24 @@ $(MODDIR):
 #
 # clean up routines
 RM = @rm -vfrd
-clean:
+mostlyclean:
 	@echo removing files...
 # remove compiled binaries
-	$(RM) $(TARGET)
 	$(RM) $(OBJDIR)/*.o
 	$(RM) $(OBJDIR)
 	$(RM) *.o *.obj
 	$(RM) $(MODDIR)/*.mod
 	$(RM) $(MODDIR)
 	$(RM) *.mod
+	$(RM) fort.*
+	@echo "$@ done"
+clean: mostlyclean
+# remove executables
+	$(RM) $(TARGET)
 	$(RM) $(BINDIR)/*.exe
 	$(RM) $(BINDIR)
 	$(RM) *.exe
 	$(RM) *.out
-	$(RM) fort.*
-	@echo "$@ done"
 distclean: clean
 # remove Git versions
 	$(RM) *.~*~
