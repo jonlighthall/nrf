@@ -6,23 +6,21 @@ compile = -c $<
 output = -o $@
 includes = -J $(MODDIR)
 options = -fimplicit-none
-warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries	\
--Wcharacter-truncation -Wconversion-extra -Wimplicit-interface	\
--Wimplicit-procedure -Winteger-division -Wintrinsics-std	\
+warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries -Wcharacter-truncation		 \
+-Wconversion-extra -Wimplicit-interface -Wimplicit-procedure -Winteger-division -Wintrinsics-std \
 -Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all
-debug = -g -fbacktrace -fcheck=all			\
--ffpe-trap=invalid,zero,overflow,underflow,denormal
+debug = -g -fbacktrace -fcheck=all -ffpe-trap=invalid,zero,overflow,underflow,denormal
 #
-# fortran compile flags
-FCFLAGS = $(compile) $(includes) $(options) $(warnings)
+# fortran compiler flags
+FCFLAGS = $(includes) $(options) $(warnings)
 F77.FLAGS = -fd-lines-as-comments
 F90.FLAGS = -std=f2008 $(debug)
-FC.COMPILE = $(FC) $(FCFLAGS)
+FC.COMPILE = $(FC) $(FCFLAGS) $(compile)
 FC.COMPILE.o = $(FC.COMPILE)  $(output) $(F77.FLAGS)
 FC.COMPILE.o.f90 = $(FC.COMPILE) $(output) $(F90.FLAGS)
 FC.COMPILE.mod = $(FC.COMPILE) -o $(OBJDIR)/$*.o $(F90.FLAGS)
 #
-# fortran link flags
+# fortran linker flags
 FLFLAGS = $(output) $^
 FC.LINK = $(FC) $(FLFLAGS)
 #
@@ -30,6 +28,8 @@ FC.LINK = $(FC) $(FLFLAGS)
 OBJDIR := obj
 MODDIR := mod
 BINDIR := bin
+INCDIR := inc
+VPATH = $(INCDIR)
 #
 # source files
 SRC.F77 = $(wildcard *.f)
@@ -60,10 +60,10 @@ DEMOS=$(wildcard *.dem.f)
 #
 # executables
 TARGET = badluk.exe
-DRIVERS=$(addprefix $(BINDIR)/,$(DEMOS:.dem.f=.exe))
+DRIVERS = $(addprefix $(BINDIR)/,$(DEMOS:.dem.f=.exe))
 EXES = $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
 
-all: $(EXES) $(OBJS) $(DEPS) $(MODS)
+all: $(EXES)
 	@echo "$@ done"
 #
 # specific recipies
@@ -112,8 +112,8 @@ $(MODDIR):
 # clean up routines
 RM = @rm -vfrd
 mostlyclean:
-	@echo removing files...
 # remove compiled binaries
+	@echo "removing compiled binary files..."
 	$(RM) $(OBJDIR)/*.o
 	$(RM) $(OBJDIR)
 	$(RM) *.o *.obj
@@ -124,12 +124,22 @@ mostlyclean:
 	@echo "$@ done"
 clean: mostlyclean
 # remove executables
-	$(RM) $(TARGET)
+	@echo "\nremoving compiled executable files..."	
 	$(RM) $(BINDIR)/*.exe
 	$(RM) $(BINDIR)
 	$(RM) *.exe
 	$(RM) *.out
-distclean: clean
+	@echo "$@ done"
+out:
+# remove outputs produced by executables
+	@echo "\nremoving output files..."
+	@echo "$@ done"
+realclean: clean out
+# remove binaries and outputs
+	$(MAKE) $@ -C pi
+	@echo "$@ done"	
+distclean: realclean
+	@echo "\nremoving backup files..."			
 # remove Git versions
 	$(RM) *.~*~
 # remove Emacs backup files
