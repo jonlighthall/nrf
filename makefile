@@ -1,3 +1,5 @@
+THISDIR=$(shell \pwd | sed 's%^.*/%%')
+
 # fortran compiler
 FC = gfortran
 #
@@ -5,16 +7,28 @@ FC = gfortran
 compile = -c $<
 output = -o $@
 includes = -J $(MODDIR)
+#
+# options
 options = -fimplicit-none
-warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries -Wcharacter-truncation		 \
--Wconversion-extra -Wimplicit-interface -Wimplicit-procedure -Winteger-division -Wintrinsics-std \
--Wreal-q-constant -Wuse-without-only -Wrealloc-lhs-all
-debug = -g -fbacktrace -fcheck=all -ffpe-trap=invalid,zero,overflow,underflow,denormal
+warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries -Wcharacter-truncation	\
+-Wimplicit-interface -Wintrinsics-std
+debug = -g -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow,denormal
+#
+# additional opotions for gfortran v4.5 and later
+options_new = -std=f2018
+warnings_new = -Wconversion-extra -Wimplicit-procedure -Winteger-division -Wreal-q-constant	\
+-Wuse-without-only -Wrealloc-lhs-all
+debug_new = -fcheck=all
+#
+# concatonate options
+options := $(options) $(options_new)
+warnings := $(warnings) $(warnings_new)
+debug:= $(debug) $(debug_new)
 #
 # fortran compiler flags
 FCFLAGS = $(includes) $(options) $(warnings)
-F77.FLAGS = -fd-lines-as-comments
-F90.FLAGS = -std=f2008 $(debug)
+F77.FLAGS = -fd-lines-as-comments -std=legacy
+F90.FLAGS = -std=f2008
 FC.COMPILE = $(FC) $(FCFLAGS) $(compile)
 FC.COMPILE.o = $(FC.COMPILE)  $(output) $(F77.FLAGS)
 FC.COMPILE.o.f90 = $(FC.COMPILE) $(output) $(F90.FLAGS)
@@ -62,11 +76,17 @@ DEMOS=$(wildcard *.dem.f)
 TARGET = badluk.exe
 DRIVERS = $(addprefix $(BINDIR)/,$(DEMOS:.dem.f=.exe))
 EXES = $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
-
-all: $(EXES)
-	@echo "$@ done"
 #
-# specific recipies
+# sub-programs
+SUBDIRS :=
+
+all: $(EXES) $(SUBDIRS)
+	@echo "$(THISDIR) $@ done"
+
+$(SUBDIRS):
+	@$(MAKE) --no-print-directory -C $@
+#
+# specific recipes
 sort=piksr
 $(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o) | $(BINDIR)
 	@echo "compiling pick sort executable $@..."
@@ -76,7 +96,7 @@ $(BINDIR)/$(TARGET): $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o) 
 	@echo "compiling target executable $@..."
 	$(FC.LINK)
 #
-# generic recipies
+# generic recipes
 $(BINDIR)/%.exe: $(OBJDIR)/%.dem.o $(DEPS) | $(BINDIR)
 	@echo "\nlinking driver executable $@..."
 	$(FC.LINK)
@@ -89,10 +109,10 @@ $(OBJDIR)/%.o: %.f $(MODS) | $(OBJDIR)
 $(OBJDIR)/%.o: %.f90 $(MODS) | $(OBJDIR)
 	@echo "\ncompiling generic f90 object $@..."
 	$(FC.COMPILE.o.f90)
-$(MODDIR)/%.mod: %.f | $(OBJDIR) $(MODDIR)
+$(MODDIR)/%.mod: %.f | $(MODDIR)
 	@echo "\ncompiling generic module $@..."
 	$(FC.COMPILE.mod)
-$(MODDIR)/%.mod: %.f90 | $(OBJDIR) $(MODDIR)
+$(MODDIR)/%.mod: %.f90 | $(MODDIR)
 	@echo "\ncompiling generic f90 module $@..."
 	$(FC.COMPILE.mod)
 #
@@ -107,20 +127,20 @@ $(MODDIR):
 .SECONDARY: $(OBJS) $(MODS)
 #
 # recipes without outputs
-.PHONY: clean distclean
+.PHONY: all $(SUBDIRS) mostlyclean clean out realclean distclean
 #
 # clean up routines
+optSUBDIRS = $(addprefix $(MAKE) $@ --no-print-directory -C ,$(addsuffix ;,$(SUBDIRS)))
 RM = @rm -vfrd
 mostlyclean:
 # remove compiled binaries
 	@echo "removing compiled binary files..."
 	$(RM) $(OBJDIR)/*.o
-	$(RM) $(OBJDIR)
 	$(RM) *.o *.obj
 	$(RM) $(MODDIR)/*.mod
-	$(RM) $(MODDIR)
 	$(RM) *.mod
 	$(RM) fort.*
+	@$(optSUBDIRS)
 	@echo "$@ done"
 clean: mostlyclean
 # remove executables
@@ -129,14 +149,18 @@ clean: mostlyclean
 	$(RM) $(BINDIR)
 	$(RM) *.exe
 	$(RM) *.out
+	$(RM) $(OBJDIR)
+	$(RM) $(MODDIR)
+	@$(optSUBDIRS)
 	@echo "$@ done"
 out:
 # remove outputs produced by executables
 	@echo "\nremoving output files..."
+	@$(optSUBDIRS)
 	@echo "$@ done"
 realclean: clean out
 # remove binaries and outputs
-	$(MAKE) $@ -C pi
+	@$(optSUBDIRS)
 	@echo "$@ done"	
 distclean: realclean
 	@echo "\nremoving backup files..."			
@@ -144,11 +168,12 @@ distclean: realclean
 	$(RM) *.~*~
 # remove Emacs backup files
 	$(RM) *~ \#*\#
+# clean sub-programs
+	@$(optSUBDIRS)
 	@echo "$@ done"
 #
 # test the makefile
 test: distclean all
-	@echo "$@ done"
 #
 # run executables
 run: $(EXES)
@@ -156,4 +181,4 @@ run: $(EXES)
 	./$(BINDIR)/$(TARGET)
 	./$(BINDIR)/caldat.exe
 	./$(BINDIR)/piksrt.exe
-	@echo "$@ done"
+	@$(optSUBDIRS)	
