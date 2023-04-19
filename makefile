@@ -124,7 +124,7 @@ $(BINDIR):
 $(MODDIR):
 	@mkdir -v $(MODDIR)
 # keep intermediate object files
-.SECONDARY: $(OBJS) $(MODS)
+.SECONDARY: $(DEPS) $(OBJS) $(MODS)
 #
 # recipes without outputs
 .PHONY: all $(SUBDIRS) mostlyclean clean out realclean distclean
@@ -141,10 +141,10 @@ mostlyclean:
 	$(RM) *.mod
 	$(RM) fort.*
 	@$(optSUBDIRS)
-	@echo "$@ done"
+	@echo "$(THISDIR) $@ done"
 clean: mostlyclean
 # remove executables
-	@echo "\nremoving compiled executable files..."	
+	@echo "\nremoving compiled executable files..."
 	$(RM) $(BINDIR)/*.exe
 	$(RM) $(BINDIR)
 	$(RM) *.exe
@@ -152,28 +152,29 @@ clean: mostlyclean
 	$(RM) $(OBJDIR)
 	$(RM) $(MODDIR)
 	@$(optSUBDIRS)
-	@echo "$@ done"
+	@echo "$(THISDIR) $@ done"
 out:
 # remove outputs produced by executables
 	@echo "\nremoving output files..."
 	@$(optSUBDIRS)
-	@echo "$@ done"
+	@echo "$(THISDIR) $@ done"
 realclean: clean out
 # remove binaries and outputs
 	@$(optSUBDIRS)
-	@echo "$@ done"	
+	@echo "$(THISDIR) $@ done"
 distclean: realclean
-	@echo "\nremoving backup files..."			
+	@echo "\nremoving backup files..."
 # remove Git versions
 	$(RM) *.~*~
 # remove Emacs backup files
 	$(RM) *~ \#*\#
 # clean sub-programs
 	@$(optSUBDIRS)
-	@echo "$@ done"
+	@echo "$(THISDIR) $@ done"
 #
 # test the makefile
 test: distclean all
+	@echo "$(THISDIR) $@ done"
 #
 # run executables
 run: $(EXES)
