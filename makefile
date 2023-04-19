@@ -177,7 +177,7 @@ test: distclean all
 	@echo "$(THISDIR) $@ done"
 #
 # run executables
-run: $(EXES)
+run: all
 # run executables which do no require user input
 	./$(BINDIR)/$(TARGET)
 	./$(BINDIR)/caldat.exe
