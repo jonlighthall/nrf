@@ -6,7 +6,6 @@ FC = gfortran
 # general flags
 compile = -c $<
 output = -o $@
-includes = -J $(MODDIR)
 #
 # options
 options = -fimplicit-none
@@ -14,13 +13,13 @@ warnings = -Wall -Wsurprising -W -pedantic -Warray-temporaries -Wcharacter-trunc
 -Wimplicit-interface -Wintrinsics-std
 debug = -g -fbacktrace -ffpe-trap=invalid,zero,overflow,underflow,denormal
 #
-# additional opotions for gfortran v4.5 and later
+# additional options for gfortran v4.5 and later
 options_new = -std=f2018
 warnings_new = -Wconversion-extra -Wimplicit-procedure -Winteger-division -Wreal-q-constant	\
 -Wuse-without-only -Wrealloc-lhs-all
 debug_new = -fcheck=all
 #
-# concatonate options
+# concatenate options
 options := $(options) $(options_new)
 warnings := $(warnings) $(warnings_new)
 debug:= $(debug) $(debug_new)
@@ -39,11 +38,16 @@ FLFLAGS = $(output) $^
 FC.LINK = $(FC) $(FLFLAGS)
 #
 # define subdirectories
+BINDIR := bin
 OBJDIR := obj
 MODDIR := mod
-BINDIR := bin
 INCDIR := inc
-VPATH = $(INCDIR)
+
+# add INCDIR if present
+ifneq ("$(strip $(wildcard $(INCDIR)))","")
+	VPATH = $(INCDIR)
+	includes = -I $(INCDIR)
+endif
 #
 # source files
 SRC.F77 = $(wildcard *.f)
@@ -60,6 +64,11 @@ MODS. = piksrt_dim moon_calc dates
 SUBS. = flmoon caldat
 FUNS. = julday
 DEPS. = $(MODS.) $(SUBS.) $(FUNS.)
+
+# add MODDIR to includes if MODS. not empty
+ifneq ("$(strip $(wildcard $(MODS.)))","")
+	includes:=$(includes) -J $(MODDIR)
+endif
 
 DEPS.o = $(addsuffix .o,$(DEPS.))
 OBJS.o = $(filter-out $(DEPS.o),$(OBJS.all))
@@ -79,7 +88,8 @@ EXES = $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
 #
 # sub-programs
 SUBDIRS :=
-
+#
+# recipes
 all: $(EXES) $(SUBDIRS)
 	@echo "$(THISDIR) $@ done"
 
@@ -117,40 +127,46 @@ $(MODDIR)/%.mod: %.f90 | $(MODDIR)
 	$(FC.COMPILE.mod)
 #
 # define directory creation
-$(OBJDIR):
-	@mkdir -v $(OBJDIR)
 $(BINDIR):
 	@mkdir -v $(BINDIR)
+$(OBJDIR):
+	@mkdir -v $(OBJDIR)
 $(MODDIR):
+ifeq ("$(wildcard $(MODS))",)
+	@echo "no modules specified"
+else
+	@echo "creating $(MODDIR)..."
 	@mkdir -v $(MODDIR)
+endif
+
 # keep intermediate object files
 .SECONDARY: $(DEPS) $(OBJS) $(MODS)
 #
 # recipes without outputs
 .PHONY: all $(SUBDIRS) mostlyclean clean out realclean distclean
 #
-# clean up routines
+# clean up
 optSUBDIRS = $(addprefix $(MAKE) $@ --no-print-directory -C ,$(addsuffix ;,$(SUBDIRS)))
 RM = @rm -vfrd
 mostlyclean:
 # remove compiled binaries
 	@echo "removing compiled binary files..."
 	$(RM) $(OBJDIR)/*.o
+	$(RM) $(OBJDIR)
 	$(RM) *.o *.obj
 	$(RM) $(MODDIR)/*.mod
+	$(RM) $(MODDIR)
 	$(RM) *.mod
 	$(RM) fort.*
 	@$(optSUBDIRS)
 	@echo "$(THISDIR) $@ done"
 clean: mostlyclean
-# remove executables
+# remove binaries and executables
 	@echo "\nremoving compiled executable files..."
 	$(RM) $(BINDIR)/*.exe
 	$(RM) $(BINDIR)
 	$(RM) *.exe
 	$(RM) *.out
-	$(RM) $(OBJDIR)
-	$(RM) $(MODDIR)
 	@$(optSUBDIRS)
 	@echo "$(THISDIR) $@ done"
 out:
@@ -160,9 +176,11 @@ out:
 	@echo "$(THISDIR) $@ done"
 realclean: clean out
 # remove binaries and outputs
+	@echo "\nremoving binary and output files..."
 	@$(optSUBDIRS)
 	@echo "$(THISDIR) $@ done"
 distclean: realclean
+# remove binaries, outputs, and backups
 	@echo "\nremoving backup files..."
 # remove Git versions
 	$(RM) *.~*~
@@ -172,14 +190,17 @@ distclean: realclean
 	@$(optSUBDIRS)
 	@echo "$(THISDIR) $@ done"
 #
-# test the makefile
+# test
 test: distclean all
+# test the makefile
 	@echo "$(THISDIR) $@ done"
 #
 # run executables
 run: all
 # run executables which do no require user input
-	./$(BINDIR)/$(TARGET)
-	./$(BINDIR)/caldat.exe
-	./$(BINDIR)/piksrt.exe
+	$(addprefix ./$(BINDIR)/, \
+	$(TARGET) \
+	$(addsuffix .exe;,\
+	caldat \
+	piksrt ))
 	@$(optSUBDIRS)	
