@@ -11,7 +11,8 @@ module dates
   end interface
 
   CHARACTER NAME(12)*10
-  DATA NAME/'January','February','March','April','May','June','July','August','September','October','November','December'/
+  DATA NAME/'January','February','March','April','May','June','July','August','September'&
+       &,'October','November','December'/
 
   CHARACTER TXT*40
   integer N
