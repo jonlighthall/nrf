@@ -66,7 +66,7 @@ FUNS. = julday
 DEPS. = $(MODS.) $(SUBS.) $(FUNS.)
 
 # add MODDIR to includes if MODS. not empty
-ifneq ("$(strip $(wildcard $(MODS.)))","")
+ifneq ("$(MODS.)","")
 	includes:=$(includes) -J $(MODDIR)
 endif
 
