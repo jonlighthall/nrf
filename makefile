@@ -45,8 +45,8 @@ INCDIR := inc
 
 # add INCDIR if present
 ifneq ("$(strip $(wildcard $(INCDIR)))","")
-	VPATH = $(INCDIR)
-	includes = -I $(INCDIR)
+	VPATH = $(subst $(subst ,, ),:,$(strip $(INCDIR)))
+	includes = $(patsubst %,-I %,$(INCDIR))
 endif
 #
 # source files
@@ -83,8 +83,8 @@ DEMOS=$(wildcard *.dem.f)
 #
 # executables
 TARGET = badluk.exe
-DRIVERS = $(addprefix $(BINDIR)/,$(DEMOS:.dem.f=.exe))
-EXES = $(addprefix $(BINDIR)/,$(TARGET)) $(DRIVERS)
+DRIVERS = $(DEMOS:.dem.f=.exe)
+EXES = $(addprefix $(BINDIR)/,$(TARGET),$(DRIVERS))
 #
 # sub-programs
 SUBDIRS :=
