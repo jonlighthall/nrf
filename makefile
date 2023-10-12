@@ -84,7 +84,7 @@ DEMOS=$(wildcard *.dem.f)
 # executables
 TARGET = badluk.exe
 DRIVERS = $(DEMOS:.dem.f=.exe)
-EXES = $(addprefix $(BINDIR)/,$(TARGET),$(DRIVERS))
+EXES = $(addprefix $(BINDIR)/,$(TARGET) $(DRIVERS))
 #
 # sub-programs
 SUBDIRS :=
@@ -187,6 +187,14 @@ distclean: realclean
 # remove Emacs backup files
 	$(RM) *~ \#*\#
 # clean sub-programs
+	@$(optSUBDIRS)
+	@echo "$(THISDIR) $@ done"
+reset: distclean
+# remove untracked files
+	@echo "\nresetting repository..."
+	git reset HEAD
+	git stash
+	git clean -f
 	@$(optSUBDIRS)
 	@echo "$(THISDIR) $@ done"
 #
