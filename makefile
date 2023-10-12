@@ -29,7 +29,7 @@ FCFLAGS = $(includes) $(options) $(warnings) $(debug)
 F77.FLAGS = -fd-lines-as-comments -std=legacy
 F90.FLAGS =
 FC.COMPILE = $(FC) $(FCFLAGS) $(compile)
-FC.COMPILE.o = $(FC.COMPILE)  $(output) $(F77.FLAGS)
+FC.COMPILE.o = $(FC.COMPILE) $(output) $(F77.FLAGS)
 FC.COMPILE.o.f90 = $(FC.COMPILE) $(output) $(F90.FLAGS)
 FC.COMPILE.mod = $(FC.COMPILE) -o $(OBJDIR)/$*.o $(F90.FLAGS)
 #
@@ -39,9 +39,9 @@ FC.LINK = $(FC) $(FLFLAGS)
 #
 # define subdirectories
 BINDIR := bin
-OBJDIR := obj
-MODDIR := mod
 INCDIR := inc
+MODDIR := mod
+OBJDIR := obj
 
 # add INCDIR if present
 ifneq ("$(strip $(wildcard $(INCDIR)))","")
@@ -168,6 +168,9 @@ clean: mostlyclean
 	$(RM) *.out
 	@$(optSUBDIRS)
 	@echo "$(THISDIR) $@ done"
+force: clean
+# force re-make
+	@$(MAKE) --no-print-directory	
 out:
 # remove outputs produced by executables
 	@echo "\nremoving output files..."
