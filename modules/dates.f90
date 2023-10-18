@@ -20,7 +20,7 @@ module dates
 contains
   subroutine read_file()
     ! read data files
-    OPEN(unit,FILE='dat/dates.dat',STATUS='OLD')
+    OPEN(unit,FILE='data/dates.dat',STATUS='OLD')
     READ(unit,'(A)') TXT
     READ(unit,*) N
   end subroutine read_file
