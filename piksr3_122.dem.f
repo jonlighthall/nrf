@@ -3,7 +3,7 @@
 C       Driver for routine PIKSR3_122
         implicit none
         interface
-           SUBROUTINE piksr3(n,arr,bn,brr,cn,crr)
+           SUBROUTINE piksr3_122(n,arr,bn,brr,cn,crr)
            INTEGER, intent(in) :: n,bn,cn,brr(n,bn),crr(n,cn)
            REAL, intent(in) :: arr(n)
            end subroutine
@@ -36,7 +36,7 @@ C       Print original arrays
         WRITE(*,*) 'press RETURN to continue...'
         READ(*,*)
 C       Sort B and mix A,C
-        CALL PIKSR3(X,A,Y,B,Y,C)
+        CALL PIKSR3_122(X,A,Y,B,Y,C)
         WRITE(*,*) 'After sorting A and mixing B and C, array A is:'
         DO I=1,X/DIV
            WRITE(*,FMT) (A(DIV*(I-1)+J), J=1,DIV)

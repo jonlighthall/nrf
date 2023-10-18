@@ -1,4 +1,4 @@
-      SUBROUTINE piksr3(n,arr,bn,brr,cn,crr)
+      SUBROUTINE piksr3_122(n,arr,bn,brr,cn,crr)
       INTEGER n,bn,cn
       REAL arr(n),brr(n,bn),crr(n,cn)
 c     Sorts a 1D array arr(1:n) into ascending numerical order, by
