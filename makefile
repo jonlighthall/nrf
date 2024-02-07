@@ -153,7 +153,7 @@ SUBDIRS :=
 #
 # recipes
 all: $(EXES) $(SUBDIRS)
-	@echo "\n$(THISDIR) $@ done"
+	@/bin/echo -e "\n$(THISDIR) $@ done"
 $(SUBDIRS):
 	@$(MAKE) --no-print-directory -C $@
 #
@@ -168,22 +168,22 @@ $(BINDIR)/$(TARGET): $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o) 
 #
 # generic recipes
 $(BINDIR)/%.exe: $(OBJDIR)/%.dem.o $(DEPS) | $(BINDIR)
-	@echo "\nlinking driver executable $@..."
+	@/bin/echo -e "\nlinking driver executable $@..."
 	$(FC.LINK)
 $(OBJDIR)/%.dem.o: %.dem.f %.f $(MODS) | $(OBJDIR)
-	@echo "\ncompiling driver object $@..."
+	@/bin/echo -e "\ncompiling driver object $@..."
 	$(FC.COMPILE.o)
 $(OBJDIR)/%.o: %.f $(MODS) | $(OBJDIR)
-	@echo "\ncompiling generic object $@..."
+	@/bin/echo -e "\ncompiling generic object $@..."
 	$(FC.COMPILE.o)
 $(OBJDIR)/%.o: %.f90 $(MODS) | $(OBJDIR)
-	@echo "\ncompiling generic f90 object $@..."
+	@/bin/echo -e "\ncompiling generic f90 object $@..."
 	$(FC.COMPILE.o.f90)
 $(MODDIR)/%.mod: %.f | $(MODDIR)
-	@echo "\ncompiling generic module $@..."
+	@/bin/echo -e "\ncompiling generic module $@..."
 	$(FC.COMPILE.mod)
 $(MODDIR)/%.mod: %.f90 | $(MODDIR)
-	@echo "\ncompiling generic f90 module $@..."
+	@/bin/echo -e "\ncompiling generic f90 module $@..."
 	$(FC.COMPILE.mod)
 #
 # define directory creation
@@ -222,7 +222,7 @@ mostlyclean:
 	@echo "$(THISDIR) $@ done"
 clean: mostlyclean
 # remove binaries and executables
-	@echo "\nremoving compiled executable files..."
+	@/bin/echo -e "\nremoving compiled executable files..."
 	$(RM) $(BINDIR)/*.exe
 	$(RM) $(BINDIR)
 	$(RM) *.exe
@@ -234,7 +234,7 @@ force: clean
 	@$(MAKE) --no-print-directory
 out:
 # remove outputs produced by executables
-	@echo "\nremoving output files..."
+	@/bin/echo -e "\nremoving output files..."
 	@$(optSUBDIRS)
 	@echo "$(THISDIR) $@ done"
 realclean: clean out
@@ -242,7 +242,7 @@ realclean: clean out
 	@$(optSUBDIRS)
 distclean: realclean
 # remove binaries, outputs, and backups
-	@echo "\nremoving backup files..."
+	@/bin/echo -e "\nremoving backup files..."
 # remove Git versions
 	$(RM) *.~*~
 # remove Emacs backup files
@@ -252,7 +252,7 @@ distclean: realclean
 	@echo "$(THISDIR) $@ done"
 reset: distclean
 # remove untracked files
-	@echo "\nresetting repository..."
+	@/bin/echo -e "\nresetting repository..."
 	git reset HEAD
 	git stash
 	git clean -f
