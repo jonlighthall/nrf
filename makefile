@@ -144,8 +144,8 @@ OBJS := $(addprefix $(OBJDIR)/,$(OBJS.o))
 DEMOS=$(wildcard *.dem.f)
 #
 # executables
-TARGET = badluk.exe
-DRIVERS = $(DEMOS:.dem.f=.exe)
+TARGET = badluk
+DRIVERS = $(DEMOS:.dem.f=)
 EXES = $(addprefix $(BINDIR)/,$(TARGET) $(DRIVERS))
 #
 # sub-programs
@@ -153,21 +153,21 @@ SUBDIRS :=
 #
 # recipes
 all: $(EXES) $(SUBDIRS)
-	@/bin/echo -e "\n$(THISDIR) $@ done"
+	@/bin/echo -e "$(THISDIR) $@ done"
 $(SUBDIRS):
 	@$(MAKE) --no-print-directory -C $@
 #
 # specific recipes
 sort=piksr
-$(BINDIR)/$(sort)%.exe: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o) | $(BINDIR)
+$(BINDIR)/$(sort)%: $(addprefix $(OBJDIR)/, $(sort)%.dem.o $(sort)%.o $(sort)t_dim.o) | $(BINDIR)
 	@echo "compiling pick sort executable $@..."
 	$(FC.LINK)
-$(BINDIR)/$(TARGET): $(addprefix $(OBJDIR)/, $(TARGET:.exe=.o) $(sort)4_1222.o) $(DEPS) | $(BINDIR)
+$(BINDIR)/$(TARGET): $(addprefix $(OBJDIR)/, $(TARGET).o $(sort)4_1222.o) $(DEPS) | $(BINDIR)
 	@echo "compiling target executable $@..."
 	$(FC.LINK)
 #
 # generic recipes
-$(BINDIR)/%.exe: $(OBJDIR)/%.dem.o $(DEPS) | $(BINDIR)
+$(BINDIR)/%: $(OBJDIR)/%.dem.o $(DEPS) | $(BINDIR)
 	@/bin/echo -e "\nlinking driver executable $@..."
 	$(FC.LINK)
 $(OBJDIR)/%.dem.o: %.dem.f %.f $(MODS) | $(OBJDIR)
@@ -223,7 +223,7 @@ mostlyclean:
 clean: mostlyclean
 # remove binaries and executables
 	@/bin/echo -e "\nremoving compiled executable files..."
-	$(RM) $(BINDIR)/*.exe
+	$(RM) $(BINDIR)/*
 	$(RM) $(BINDIR)
 	$(RM) *.exe
 	$(RM) *.out
@@ -266,9 +266,10 @@ test: distclean all
 # run executables
 run: all
 # run executables which do no require user input
-	$(addprefix ./$(BINDIR)/, \
+	@echo "running executables..."
+	$(addsuffix ;, \
+  $(addprefix ./$(BINDIR)/, \
 	$(TARGET) \
-	$(addsuffix .exe;,\
 	caldat \
 	piksrt ))
 	@$(optSUBDIRS)
