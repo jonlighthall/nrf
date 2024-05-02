@@ -5,7 +5,7 @@ C     Driver for routine CALDAT
       integer I,IM,ID,IY,IYCOPY,J,IMM,IDD,IYY
       call read_file()
 C     Check whether CALDAT properly undoes the operation of JULDAY
-      WRITE(*,'(/1X,A,T40,A)') 'Original Date:','Reconstructed Date:'
+      WRITE(*,'(1X,A,T40,A)') 'Original Date:','Reconstructed Date:'
       WRITE(*,'(1X,A,T12,A,T17,A,T25,A,T40,A,T50,A,T55,A/)')
      *     'Month','Day','Year','Julian Day','Month','Day','Year'
       DO I=1,N
