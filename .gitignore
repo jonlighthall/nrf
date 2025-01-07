@@ -1,20 +1,34 @@
+#----------------
+# Compiled files
+#----------------
+
 # Compiled Object files
+**/obj
 *.o
 *.obj
-obj/
 
 # Fortran module files
+**/mod
 *.mod
-mod/
 
 # Executables
+**/bin
 *.exe
 *.out
-bin/
+*.x
+*.xc
+
+#----------------
+# Backups
+#----------------
 
 # Emacs
 *~
 \#*#
 
-# Git 
+# Fortran I/O files
+fort.?
+
+# Git
 *.~*~
+*.*~Stashed*
