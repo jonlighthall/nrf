@@ -1,7 +1,8 @@
-THISDIR=$(shell \pwd | sed 's%^.*/%%')
-
+# get name of this directory
+THISDIR=$(shell basename $$PWD)
+#
 # fortran compiler
-FC = gfortran
+FC := gfortran
 #
 # general flags
 compile = -c $<
@@ -188,17 +189,19 @@ $(MODDIR)/%.mod: %.f90 | $(MODDIR)
 #
 # define directory creation
 $(BINDIR):
-	@mkdir -v $(BINDIR)
+	@echo "making $(BINDIR)..."
+	@mkdir -pv $(BINDIR)
 $(OBJDIR):
-	@mkdir -v $(OBJDIR)
+	@echo "making $(OBJDIR)..."
+	@mkdir -pv $(OBJDIR)
 $(MODDIR):
 ifeq ("$(wildcard $(MODS))",)
 	@echo "no modules specified"
 else
-	@echo "creating $(MODDIR)..."
-	@mkdir -v $(MODDIR)
+	@echo "making $(MODDIR)..."
+	@mkdir -pv $(MODDIR)
 endif
-
+#
 # keep intermediate object files
 .SECONDARY: $(DEPS) $(OBJS) $(MODS)
 #
